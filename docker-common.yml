@@ -1,0 +1,4 @@
+php70:
+  build: docker/php70
+  volumes:
+    - ./logs/apache2:/var/log/apache2

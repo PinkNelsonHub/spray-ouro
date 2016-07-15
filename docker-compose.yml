@@ -1,0 +1,28 @@
+eventstore:
+  build: docker/eventstore
+  command: bash /entrypoint.sh
+  volumes:
+    - ./data/eventstore:/var/lib/eventstore
+    - ./logs/eventstore:/var/log/eventstore
+  ports:
+    - 2113:2113
+
+test:
+  extends:
+    file: docker-common.yml
+    service: php70
+  links:
+    - eventstore
+  volumes:
+    - ./:/var/www
+  command: php test.php
+
+threads:
+  extends:
+    file: docker-common.yml
+    service: php70
+  links:
+    - eventstore
+  volumes:
+    - ./:/var/www
+  command: php threads.php
