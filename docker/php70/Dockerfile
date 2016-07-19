@@ -8,9 +8,9 @@ RUN docker-php-ext-install mcrypt mbstring pdo pdo_mysql soap zip && \
     mv composer.phar /usr/local/bin/composer && \
     chmod +x /usr/local/bin/composer
 
-RUN yes | pecl install xdebug pthreads && \
+RUN yes | pecl install xdebug pthreads ev && \
     echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini && \
-    docker-php-ext-enable pthreads
+    docker-php-ext-enable pthreads ev
 
 RUN curl http://get.sensiolabs.org/php-cs-fixer.phar -o /usr/bin/php-cs-fixer && \
     chmod a+x /usr/bin/php-cs-fixer
