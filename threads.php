@@ -36,21 +36,18 @@ $subscriptions = new PersistentSubscription($transport);
 $coroutine = Coroutine\create(function() use ($subscriptions) {
     yield from $subscriptions->connect('bar', 'foo', 10, function(PersistentSubsciptionStreamEventAppeared $appeared) use ($subscriptions) {
         echo "Appeared: {$appeared->getEvent()->getEvent()->getEventType()}: {$appeared->getEvent()->getEvent()->getEventId()}\n";
-        echo "Acking...\n";
-        yield from $subscriptions->acknowledge('bar', 'foo', [$appeared->getEvent()->getEvent()->getEventId()]);
     });
 });
 $coroutine->then(
     function() {},
     function(Exception $e) {
-        echo $e->getMessage();
+        echo $e->getMessage() . "\n";
     }
 );
 
-//$timeout = Coroutine\create(function() use ($coroutine) {
-//    yield Awaitable\resolve()->delay(5);
-//    echo "Cancelling...\n";
-//    Loop\stop();
-//});
+$timeout = Coroutine\create(function() use ($coroutine) {
+    yield Awaitable\resolve()->delay(5);
+    $coroutine->cancel();
+});
 
 Loop\run();

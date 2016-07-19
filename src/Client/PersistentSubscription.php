@@ -4,10 +4,12 @@ namespace Mhwk\Ouro\Client;
 
 use Generator;
 use Mhwk\Ouro\Message\ConnectToPersistentSubscription;
+use Mhwk\Ouro\Message\NakAction;
 use Mhwk\Ouro\Message\PersistentSubscriptionAckEvents;
 use Mhwk\Ouro\Message\PersistentSubscriptionNakEvents;
 use Mhwk\Ouro\Transport\IHandleMessage;
 use React\EventLoop\LoopInterface;
+use Throwable;
 
 final class PersistentSubscription implements IConnectToPersistentSubscription, IConfirmEvent
 {
@@ -45,7 +47,22 @@ final class PersistentSubscription implements IConnectToPersistentSubscription, 
         $iterator = $observable->getIterator();
 
         while (yield $iterator->isValid()) {
-            yield from $onEventAppeared($iterator->getCurrent());
+            try {
+                yield from $onEventAppeared($iterator->getCurrent());
+                yield from $this->acknowledge(
+                    $subscriptionId,
+                    $streamId,
+                    [$iterator->getCurrent()->getEvent()->getEvent()->getEventId()]
+                );
+            } catch (Throwable $error) {
+                yield from $this->fail(
+                    $subscriptionId,
+                    $streamId,
+                    [$iterator->getCurrent()->getEvent()->getEvent()->getEventId()],
+                    $error->getMessage(),
+                    NakAction::PARK
+                );
+            }
         }
     }
 
@@ -58,7 +75,11 @@ final class PersistentSubscription implements IConnectToPersistentSubscription, 
      */
     public function acknowledge(string $subscriptionId, string $streamId, array $processedStreamIds): Generator
     {
-        yield from $this->transport->handle(new PersistentSubscriptionAckEvents($subscriptionId, $streamId, $processedStreamIds));
+        yield from $this->transport->handle(new PersistentSubscriptionAckEvents(
+            $subscriptionId,
+            $streamId,
+            $processedStreamIds
+        ));
     }
 
     /**
@@ -72,6 +93,12 @@ final class PersistentSubscription implements IConnectToPersistentSubscription, 
      */
     public function fail(string $subscriptionId, string $streamId, array $processedStreamIds, string $message, int $action): Generator
     {
-        yield from $this->transport->handle(new PersistentSubscriptionNakEvents($subscriptionId, $streamId, $processedStreamIds, $message, $action));
+        yield from $this->transport->handle(new PersistentSubscriptionNakEvents(
+            $subscriptionId,
+            $streamId,
+            $processedStreamIds,
+            $message,
+            new NakAction($action)
+        ));
     }
 }
