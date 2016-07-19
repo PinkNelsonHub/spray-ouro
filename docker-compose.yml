@@ -7,7 +7,7 @@ eventstore:
   ports:
     - 2113:2113
 
-test:
+write:
   extends:
     file: docker-common.yml
     service: php70
@@ -15,9 +15,9 @@ test:
     - eventstore
   volumes:
     - ./:/var/www
-  command: php test.php
+  command: php write.php
 
-threads:
+read:
   extends:
     file: docker-common.yml
     service: php70
@@ -25,4 +25,14 @@ threads:
     - eventstore
   volumes:
     - ./:/var/www
-  command: php threads.php
+  command: php read.php
+
+subscribe:
+  extends:
+    file: docker-common.yml
+    service: php70
+  links:
+    - eventstore
+  volumes:
+    - ./:/var/www
+  command: php subscribe.php

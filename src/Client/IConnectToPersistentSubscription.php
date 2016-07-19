@@ -2,7 +2,7 @@
 
 namespace Mhwk\Ouro\Client;
 
-use Generator;
+use Icicle\Coroutine\Coroutine;
 
 interface IConnectToPersistentSubscription
 {
@@ -14,11 +14,11 @@ interface IConnectToPersistentSubscription
      * @param int $allowedInFlightMessages
      * @param callable $onEventAppeared
      *
-     * @return Generator
+     * @return Coroutine
      */
-    public function connect(
+    public function subscribePersistent(
         string $subscriptionId,
         string $streamId,
         int $allowedInFlightMessages,
-        callable $onEventAppeared): Generator;
+        callable $onEventAppeared): Coroutine;
 }

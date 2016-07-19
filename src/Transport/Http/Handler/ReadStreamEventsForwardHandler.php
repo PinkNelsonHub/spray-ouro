@@ -32,39 +32,28 @@ final class ReadStreamEventsForwardHandler extends HttpEntriesHandler
      */
     function request($command)
     {
-        return new Emitter(function(callable $emit) use ($command) {
-            $head = false;
-            $start = $command->getStart();
-            $count = $command->getCount();
+        $response = $this->send(new Request(
+            'GET',
+            sprintf(
+                '/streams/%s/%s/forward/%s?embed=content',
+                $command->getStream(),
+                $command->getStart(),
+                $command->getCount()
+            ),
+            [
+                'Accept' => 'application/vnd.eventstore.atom+json'
+            ]
+        ));
 
-            while ( ! $head) {
-                $response = $this->send(new Request(
-                    'GET',
-                    sprintf(
-                        '/streams/%s/%s/forward/%s?embed=content',
-                        $command->getStream(),
-                        $start,
-                        $count
-                    ),
-                    [
-                        'Accept' => 'application/vnd.eventstore.atom+json'
-                    ]
-                ));
+        $this->assertResponse($response);
 
-                $this->assertResponse($response);
+        $data = json_decode($response->getBody()->getContents(), true);
 
-                $data = json_decode($response->getBody()->getContents(), true);
-
-                yield $emit(new ReadStreamEventsComplete(
-                    $this->buildEvents($data['entries']),
-                    new ReadStreamResult(0),
-                    $data['headOfStream'],
-                    ''
-                ));
-
-                $head = $data['headOfStream'];
-                $start += $count;
-            }
-        });
+        yield new ReadStreamEventsComplete(
+            $this->buildEvents($data['entries']),
+            new ReadStreamResult(0),
+            $data['headOfStream'],
+            ''
+        );
     }
 }

@@ -57,7 +57,7 @@ final class ReadStreamEventsComplete
     /**
      * @return boolean
      */
-    public function isIsEndOfStream()
+    public function isEndOfStream()
     {
         return $this->isEndOfStream;
     }
