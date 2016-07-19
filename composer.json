@@ -5,7 +5,7 @@
     "php": ">=7.0",
     "guzzlehttp/guzzle": "~6.0",
     "beberlei/assert": "~2.5",
-    "ramsey/uuid": "~3.4",
+    "ramsey/uuid": ">=2.4",
     "krakjoe/pthreads-polyfill": "~1.1",
     "icicleio/icicle": "~0.9",
     "icicleio/concurrent": "~0.3",
