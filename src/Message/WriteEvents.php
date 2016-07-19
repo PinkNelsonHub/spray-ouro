@@ -17,7 +17,7 @@ final class WriteEvents
     /**
      * @var NewEvent[]
      */
-    private $newEvents;
+    private $newEvents = [];
 
     /**
      * @var bool
