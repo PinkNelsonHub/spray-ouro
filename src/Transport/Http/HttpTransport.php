@@ -3,11 +3,15 @@
 namespace Mhwk\Ouro\Transport\Http;
 
 use GuzzleHttp\Client as GuzzleClient;
+use Mhwk\Ouro\Message\PersistentSubscriptionAckEvents;
+use Mhwk\Ouro\Message\PersistentSubscriptionNakEvents;
 use Mhwk\Ouro\Transport\Http\Handler\ConnectToPersistentSubscriptionHandler;
 use Mhwk\Ouro\Message\ConnectToPersistentSubscription;
 use Mhwk\Ouro\Message\ReadStreamEventsForward;
 use Mhwk\Ouro\Message\WriteEvents;
 use Mhwk\Ouro\Exception\RuntimeException;
+use Mhwk\Ouro\Transport\Http\Handler\PersistentSubscriptionAckEventsHandler;
+use Mhwk\Ouro\Transport\Http\Handler\PersistentSubscriptionNakEventsHandler;
 use Mhwk\Ouro\Transport\Http\Handler\ReadStreamEventsForwardHandler;
 use Mhwk\Ouro\Transport\Http\Handler\WriteEventsHandler;
 use Mhwk\Ouro\Transport\IHandleMessage;
@@ -41,6 +45,8 @@ final class HttpTransport implements IHandleMessage
         $this->handlers[ReadStreamEventsForward::class] = new ReadStreamEventsForwardHandler($this->client);
         $this->handlers[WriteEvents::class] = new WriteEventsHandler($this->client);
         $this->handlers[ConnectToPersistentSubscription::class] = new ConnectToPersistentSubscriptionHandler($this->client);
+        $this->handlers[PersistentSubscriptionAckEvents::class] = new PersistentSubscriptionAckEventsHandler($this->client);
+        $this->handlers[PersistentSubscriptionNakEvents::class] = new PersistentSubscriptionNakEventsHandler($this->client);
     }
 
     /**

@@ -1,11 +1,14 @@
 <?php
 
-
-use Mhwk\Ouro\Async\Async;
-use Mhwk\Ouro\Async\Threading\Deferred;
-use Mhwk\Ouro\Async\Threading\Future;
-use Mhwk\Ouro\Async\Threading\ThreadPool;
-use Mhwk\Ouro\Async\Threading\Utility;
+use Icicle\Awaitable;
+use Icicle\Coroutine;
+use Icicle\Loop;
+use Mhwk\Ouro\Client\PersistentSubscription;
+use Mhwk\Ouro\Message\NewEvent;
+use Mhwk\Ouro\Message\PersistentSubsciptionStreamEventAppeared;
+use Mhwk\Ouro\Message\WriteEvents;
+use Mhwk\Ouro\Transport\Http\HttpTransport;
+use Ramsey\Uuid\Uuid;
 
 error_reporting(-1);
 ini_set('display_errors', 1);
@@ -13,17 +16,41 @@ ini_set('display_errors', 1);
 chdir(__DIR__);
 require 'vendor/autoload.php';
 
-$deferred = Async::deferred(function() {
-    sleep(1);
-    echo "Resolving...\n";
+$transport = HttpTransport::factory('eventstore:2113', 'admin', 'changeit');
+$transport->handle(new WriteEvents(
+    'foo',
+    -2,
+    [
+        new NewEvent(
+            Uuid::uuid4(),
+            'Foo',
+            ['foo'=>'bar'],
+            []
+        )
+    ],
+    false
+));
+
+$subscriptions = new PersistentSubscription($transport);
+
+$coroutine = Coroutine\create(function() use ($subscriptions) {
+    yield from $subscriptions->connect('bar', 'foo', 10, function(PersistentSubsciptionStreamEventAppeared $appeared) use ($subscriptions) {
+        echo "Appeared: {$appeared->getEvent()->getEvent()->getEventType()}: {$appeared->getEvent()->getEvent()->getEventId()}\n";
+        echo "Acking...\n";
+        yield from $subscriptions->acknowledge('bar', 'foo', [$appeared->getEvent()->getEvent()->getEventId()]);
+    });
 });
-$deferred->promise()->then(
-    function() {
-        echo "Promise success\n";
-    },
-    function() {
-        echo "Promise failure\n";
+$coroutine->then(
+    function() {},
+    function(Exception $e) {
+        echo $e->getMessage();
     }
 );
 
-ThreadPool::run();
+//$timeout = Coroutine\create(function() use ($coroutine) {
+//    yield Awaitable\resolve()->delay(5);
+//    echo "Cancelling...\n";
+//    Loop\stop();
+//});
+
+Loop\run();

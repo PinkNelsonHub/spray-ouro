@@ -4,5 +4,10 @@ namespace Mhwk\Ouro\Transport;
 
 interface IHandleMessage
 {
-    public function handle($message);
+    /**
+     * @param object $message
+     *
+     * @return mixed
+     */
+    function handle($message);
 }

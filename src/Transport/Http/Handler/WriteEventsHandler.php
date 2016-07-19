@@ -43,7 +43,7 @@ final class WriteEventsHandler extends HttpHandler
 
         $this->assertResponse($response);
 
-        return new WriteEventsCompleted(new OperationResult(OperationResult::SUCCESS), '');
+        yield new WriteEventsCompleted(new OperationResult(OperationResult::SUCCESS), '');
     }
 
     /**

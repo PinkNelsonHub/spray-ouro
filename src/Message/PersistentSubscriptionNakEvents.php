@@ -10,6 +10,11 @@ final class PersistentSubscriptionNakEvents
     private $subscriptionId;
 
     /**
+     * @var string
+     */
+    private $streamId;
+
+    /**
      * @var string[]
      */
     private $processedEventIds;
@@ -26,13 +31,15 @@ final class PersistentSubscriptionNakEvents
 
     /**
      * @param string $subscriptionId
+     * @param string $streamId
      * @param array $processedEventIds
      * @param string $message
      * @param NakAction $action
      */
-    public function __construct(string $subscriptionId, array $processedEventIds, string $message, NakAction $action)
+    public function __construct(string $subscriptionId, string $streamId, array $processedEventIds, string $message, NakAction $action)
     {
         $this->subscriptionId = $subscriptionId;
+        $this->streamId = $streamId;
         $this->setProcessedEventIds($processedEventIds);
         $this->message = $message;
         $this->action = $action;
@@ -44,6 +51,14 @@ final class PersistentSubscriptionNakEvents
     public function getSubscriptionId(): string
     {
         return $this->subscriptionId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStreamId()
+    {
+        return $this->streamId;
     }
 
     /**

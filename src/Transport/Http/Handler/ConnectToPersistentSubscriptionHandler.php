@@ -4,13 +4,15 @@ namespace Mhwk\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
 use GuzzleHttp\Psr7\Request;
+use Icicle\Awaitable;
+use Icicle\Observable\Emitter;
 use Mhwk\Ouro\Message\ConnectToPersistentSubscription;
 use Mhwk\Ouro\Message\PersistentSubsciptionStreamEventAppeared;
-use Mhwk\Ouro\Message\PersistentSubscriptionAckEvents;
-use Mhwk\Ouro\Message\PersistentSubscriptionNakEvents;
 
 final class ConnectToPersistentSubscriptionHandler extends HttpEntriesHandler
 {
+    private $running = true;
+
     /**
      * Assert that the command can be handled.
      *
@@ -32,70 +34,35 @@ final class ConnectToPersistentSubscriptionHandler extends HttpEntriesHandler
      */
     function request($command)
     {
-        $response = $this->send(new Request(
-            'GET',
-            sprintf(
-                '/subscriptions/%s/%s?embed=content&count=%s',
-                $command->getEventStreamId(),
-                $command->getSubscriptionId(),
-                $command->getAllowedInFlightMessages()
-            ),
-            [
-                'Accept' => 'application/vnd.eventstore.competingatom+json'
-            ]
-        ));
+        return new Emitter(function(callable $emit) use ($command) {
+            while ($this->running) {
+                $response = $this->send(new Request(
+                    'GET',
+                    sprintf(
+                        '/subscriptions/%s/%s/%s?embed=content',
+                        $command->getEventStreamId(),
+                        $command->getSubscriptionId(),
+                        $command->getAllowedInFlightMessages()
+                    ),
+                    [
+                        'Accept' => 'application/vnd.eventstore.competingatom+json'
+                    ]
+                ));
 
-        $this->assertResponse($response);
+                $this->assertResponse($response);
 
-        $data = json_decode($response->getBody()->getContents(), true);
+                $data = json_decode($response->getBody()->getContents(), true);
 
-        $running = true;
-
-        while ($running) {
-            $action = yield new PersistentSubsciptionStreamEventAppeared(
-                $this->buildEvent($data['entries'][0])
-            );
-
-            if ($action instanceof PersistentSubscriptionAckEvents) {
-                $this->ack($command->getEventStreamId(), $command->getSubscriptionId(), $action);
-            } else if ($action instanceof PersistentSubscriptionNakEvents) {
-                $this->nak($command->getEventStreamId(), $command->getSubscriptionId(), $action);
+                if (count($data['entries'])) {
+                    foreach ($data['entries'] as $entry) {
+                        yield $emit(new PersistentSubsciptionStreamEventAppeared(
+                            $this->buildEvent($entry)
+                        ));
+                    }
+                } else {
+                    yield Awaitable\resolve()->delay(.5);
+                }
             }
-
-            $running = false;
-        }
-    }
-
-    private function ack($stream, $group, PersistentSubscriptionAckEvents $message)
-    {
-        $response = $this->send(new Request(
-            'POST',
-            sprintf(
-                '/subscriptions/%s/%s/ack?ids=%s',
-                $stream,
-                $group,
-                implode(',', $message->getProcessedEventIds()),
-                count($message->getProcessedEventIds())
-            )
-        ));
-
-        $this->assertResponse($response);
-    }
-
-    private function nak($stream, $group, PersistentSubscriptionNakEvents $message)
-    {
-        $response = $this->send(new Request(
-            'POST',
-            sprintf(
-                '/subscriptions/%s/%s/nack?ids=%s&action=%s',
-                $stream,
-                $group,
-                implode(',', $message->getProcessedEventIds()),
-                $message->getAction(),
-                count($message->getProcessedEventIds())
-            )
-        ));
-
-        $this->assertResponse($response);
+        });
     }
 }

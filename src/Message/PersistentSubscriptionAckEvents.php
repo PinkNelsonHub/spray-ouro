@@ -10,32 +10,47 @@ final class PersistentSubscriptionAckEvents
     private $subscriptionId;
 
     /**
+     * @var string
+     */
+    private $streamId;
+
+    /**
      * @var array
      */
     private $processedEventIds;
 
     /**
      * @param string $subscriptionId
+     * @param string $streamId
      * @param string[] $processedEventIds
      */
-    public function __construct(string $subscriptionId, array $processedEventIds)
+    public function __construct(string $subscriptionId, string $streamId, array $processedEventIds)
     {
         $this->subscriptionId = $subscriptionId;
+        $this->streamId = $streamId;
         $this->setProcessedEventIds($processedEventIds);
     }
 
     /**
      * @return string
      */
-    public function getSubscriptionId()
+    public function getSubscriptionId(): string
     {
         return $this->subscriptionId;
     }
 
     /**
+     * @return string
+     */
+    public function getStreamId(): string
+    {
+        return $this->streamId;
+    }
+
+    /**
      * @return array
      */
-    public function getProcessedEventIds()
+    public function getProcessedEventIds(): array
     {
         return $this->processedEventIds;
     }
