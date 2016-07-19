@@ -11,7 +11,7 @@ abstract class HttpEntriesHandler extends HttpHandler
     {
         $result = [];
 
-        foreach ($entries as $entry) {
+        foreach (array_reverse($entries) as $entry) {
             $result[] = $this->buildEvent($entry);
         }
 
