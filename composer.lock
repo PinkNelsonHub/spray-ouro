@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "002768b86606a9886f05aedcbc754072",
-    "content-hash": "07fdbb7b4b22bf4f134745345dc51c1e",
+    "hash": "bf1763b2fc7a71e3c80ee51ccee5a66b",
+    "content-hash": "54712c82e17f275f6465906e1e5345bb",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -233,24 +233,24 @@
         },
         {
             "name": "icicleio/concurrent",
-            "version": "v0.3.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/icicleio/concurrent.git",
-                "reference": "d0654e590905377af6053ee896793c36f234b777"
+                "reference": "74e9e76fe6ac64418e23ab0e86bab13c6969f4a7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/icicleio/concurrent/zipball/d0654e590905377af6053ee896793c36f234b777",
-                "reference": "d0654e590905377af6053ee896793c36f234b777",
+                "url": "https://api.github.com/repos/icicleio/concurrent/zipball/74e9e76fe6ac64418e23ab0e86bab13c6969f4a7",
+                "reference": "74e9e76fe6ac64418e23ab0e86bab13c6969f4a7",
                 "shasum": ""
             },
             "require": {
-                "icicleio/icicle": "^0.9.1",
-                "icicleio/stream": "^0.5.4"
+                "icicleio/icicle": "^2.0",
+                "icicleio/stream": "^2.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.8"
+                "phpunit/phpunit": "^5.0"
             },
             "suggest": {
                 "ext-pcntl": "Required for fork contexts",
@@ -259,6 +259,11 @@
                 "ext-sysvshm": "Required for fork contexts"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Icicle\\Concurrent\\": "src"
@@ -288,33 +293,38 @@
                 "asynchronous",
                 "stream"
             ],
-            "time": "2016-01-15 19:07:12"
+            "time": "2016-02-22 05:07:31"
         },
         {
             "name": "icicleio/icicle",
-            "version": "v0.9.6",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/icicleio/icicle.git",
-                "reference": "84a3cc6f7dc38500f4ed9bdae79f458d191cb119"
+                "reference": "6ece7226e625ebd363ed301ccd92dabb36183777"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/icicleio/icicle/zipball/84a3cc6f7dc38500f4ed9bdae79f458d191cb119",
-                "reference": "84a3cc6f7dc38500f4ed9bdae79f458d191cb119",
+                "url": "https://api.github.com/repos/icicleio/icicle/zipball/6ece7226e625ebd363ed301ccd92dabb36183777",
+                "reference": "6ece7226e625ebd363ed301ccd92dabb36183777",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.5|^7.0"
+                "php": "^7.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.6"
+                "phpunit/phpunit": "^5.0"
             },
             "suggest": {
                 "ext-ev": "Provides an event loop with better performance.",
                 "ext-pcntl": "Enables custom signal handling."
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Icicle\\": "src"
@@ -354,84 +364,37 @@
                 "server",
                 "stream"
             ],
-            "time": "2016-03-31 16:34:26"
-        },
-        {
-            "name": "icicleio/react-adapter",
-            "version": "v0.4.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/icicleio/react-adapter.git",
-                "reference": "3d1e727a272ee9bd80783a12f0495638b015a211"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/icicleio/react-adapter/zipball/3d1e727a272ee9bd80783a12f0495638b015a211",
-                "reference": "3d1e727a272ee9bd80783a12f0495638b015a211",
-                "shasum": ""
-            },
-            "require": {
-                "icicleio/icicle": "^0.9.1",
-                "react/event-loop": "^0.4",
-                "react/promise": "^2.2"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^4.6"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "0.4-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Icicle\\ReactAdapter\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Aaron Piotrowski",
-                    "email": "aaron@icicle.io"
-                }
-            ],
-            "description": "Adapts the event loop and promises of Icicle to interfaces compatible with components built for React.",
-            "homepage": "http://icicle.io",
-            "keywords": [
-                "adapter",
-                "loop",
-                "promise"
-            ],
-            "time": "2015-12-07 21:38:36"
+            "time": "2016-03-31 16:38:31"
         },
         {
             "name": "icicleio/stream",
-            "version": "v0.5.5",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/icicleio/stream.git",
-                "reference": "f9bce748b233d583c4b385a1b247f7be8fb69c24"
+                "reference": "a5d80f39a99dfadf02a1e9fc7d11d3fc31c42865"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/icicleio/stream/zipball/f9bce748b233d583c4b385a1b247f7be8fb69c24",
-                "reference": "f9bce748b233d583c4b385a1b247f7be8fb69c24",
+                "url": "https://api.github.com/repos/icicleio/stream/zipball/a5d80f39a99dfadf02a1e9fc7d11d3fc31c42865",
+                "reference": "a5d80f39a99dfadf02a1e9fc7d11d3fc31c42865",
                 "shasum": ""
             },
             "require": {
-                "icicleio/icicle": "^0.9.1"
+                "icicleio/icicle": "~2.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.6"
+                "phpunit/phpunit": "~5.0"
             },
             "suggest": {
                 "ext-mbstring": "Enables encoding-aware text stream reading."
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Icicle\\Stream\\": "src"
@@ -457,7 +420,7 @@
                 "asynchronous",
                 "stream"
             ],
-            "time": "2016-02-21 19:16:19"
+            "time": "2016-02-21 19:19:43"
         },
         {
             "name": "krakjoe/pthreads-polyfill",
@@ -681,94 +644,6 @@
                 "uuid"
             ],
             "time": "2016-04-24 00:30:41"
-        },
-        {
-            "name": "react/event-loop",
-            "version": "v0.4.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/reactphp/event-loop.git",
-                "reference": "164799f73175e1c80bba92a220ea35df6ca371dd"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/event-loop/zipball/164799f73175e1c80bba92a220ea35df6ca371dd",
-                "reference": "164799f73175e1c80bba92a220ea35df6ca371dd",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4.0"
-            },
-            "suggest": {
-                "ext-event": "~1.0",
-                "ext-libev": "*",
-                "ext-libevent": ">=0.1.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "0.5-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "React\\EventLoop\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Event loop abstraction layer that libraries can use for evented I/O.",
-            "keywords": [
-                "asynchronous",
-                "event-loop"
-            ],
-            "time": "2016-03-08 02:09:32"
-        },
-        {
-            "name": "react/promise",
-            "version": "v2.4.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/reactphp/promise.git",
-                "reference": "8025426794f1944de806618671d4fa476dc7626f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/promise/zipball/8025426794f1944de806618671d4fa476dc7626f",
-                "reference": "8025426794f1944de806618671d4fa476dc7626f",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "React\\Promise\\": "src/"
-                },
-                "files": [
-                    "src/functions_include.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jan Sorgalla",
-                    "email": "jsorgalla@gmail.com"
-                }
-            ],
-            "description": "A lightweight implementation of CommonJS Promises/A for PHP",
-            "time": "2016-05-03 17:50:52"
         }
     ],
     "packages-dev": [
@@ -2071,7 +1946,11 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "icicleio/icicle": 20,
+        "icicleio/stream": 20,
+        "icicleio/concurrent": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

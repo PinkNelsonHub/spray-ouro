@@ -7,9 +7,9 @@
     "beberlei/assert": "~2.5",
     "ramsey/uuid": ">=2.4",
     "krakjoe/pthreads-polyfill": "~1.1",
-    "icicleio/icicle": "~0.9",
-    "icicleio/concurrent": "~0.3",
-    "icicleio/react-adapter": "~0.4"
+    "icicleio/icicle": "dev-master",
+    "icicleio/stream": "dev-master",
+    "icicleio/concurrent": "dev-master"
   },
   "require-dev": {
     "phpunit/phpunit": "~5.4"
