@@ -1,7 +1,7 @@
 <?php
 
 use Mhwk\Ouro\Client\Connection;
-use Mhwk\Ouro\Message\EventRecord;
+use Mhwk\Ouro\Transport\Message\EventRecord;
 use Icicle\Awaitable;
 use Icicle\Coroutine;
 use Icicle\Loop;

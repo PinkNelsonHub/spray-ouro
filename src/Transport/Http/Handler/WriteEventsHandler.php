@@ -4,10 +4,10 @@ namespace Mhwk\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
 use GuzzleHttp\Psr7\Request;
-use Mhwk\Ouro\Message\NewEvent;
-use Mhwk\Ouro\Message\OperationResult;
-use Mhwk\Ouro\Message\WriteEvents;
-use Mhwk\Ouro\Message\WriteEventsCompleted;
+use Mhwk\Ouro\Transport\Message\NewEvent;
+use Mhwk\Ouro\Transport\Message\OperationResult;
+use Mhwk\Ouro\Transport\Message\WriteEvents;
+use Mhwk\Ouro\Transport\Message\WriteEventsCompleted;
 
 final class WriteEventsHandler extends HttpHandler
 {

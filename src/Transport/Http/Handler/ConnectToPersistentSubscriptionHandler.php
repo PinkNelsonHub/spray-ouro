@@ -3,11 +3,12 @@
 namespace Mhwk\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
+use Assert\AssertionFailedException;
 use GuzzleHttp\Psr7\Request;
 use Icicle\Awaitable;
 use Icicle\Observable\Emitter;
-use Mhwk\Ouro\Message\ConnectToPersistentSubscription;
-use Mhwk\Ouro\Message\PersistentSubsciptionStreamEventAppeared;
+use Mhwk\Ouro\Transport\Message\ConnectToPersistentSubscription;
+use Mhwk\Ouro\Transport\Message\PersistentSubsciptionStreamEventAppeared;
 
 final class ConnectToPersistentSubscriptionHandler extends HttpEntriesHandler
 {
@@ -55,9 +56,14 @@ final class ConnectToPersistentSubscriptionHandler extends HttpEntriesHandler
 
                 if (count($data['entries'])) {
                     foreach ($data['entries'] as $entry) {
-                        yield $emit(new PersistentSubsciptionStreamEventAppeared(
-                            $this->buildEvent($entry)
-                        ));
+                        try {
+                            $this->assertEvent($entry);
+                            yield $emit(new PersistentSubsciptionStreamEventAppeared(
+                                $this->buildEvent($entry)
+                            ));
+                        } catch (AssertionFailedException $e) {
+                            continue;
+                        }
                     }
                 } else {
                     yield Awaitable\resolve()->delay(.5);

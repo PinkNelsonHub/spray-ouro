@@ -1,8 +1,8 @@
 <?php
 
-namespace Mhwk\Ouro\Message;
+namespace Mhwk\Ouro\Transport\Message;
 
-use Mhwk\Ouro\Message\UserCredentials;
+use Mhwk\Ouro\Transport\Message\UserCredentials;
 
 final class ReadStreamEventsForward
 {

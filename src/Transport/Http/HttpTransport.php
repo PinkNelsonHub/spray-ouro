@@ -3,19 +3,19 @@
 namespace Mhwk\Ouro\Transport\Http;
 
 use GuzzleHttp\Client as GuzzleClient;
-use Mhwk\Ouro\Message\PersistentSubscriptionAckEvents;
-use Mhwk\Ouro\Message\PersistentSubscriptionNakEvents;
+use Mhwk\Ouro\Transport\Message\PersistentSubscriptionAckEvents;
+use Mhwk\Ouro\Transport\Message\PersistentSubscriptionNakEvents;
 use Mhwk\Ouro\Transport\Http\Handler\ConnectToPersistentSubscriptionHandler;
-use Mhwk\Ouro\Message\ConnectToPersistentSubscription;
-use Mhwk\Ouro\Message\ReadStreamEventsForward;
-use Mhwk\Ouro\Message\WriteEvents;
+use Mhwk\Ouro\Transport\Message\ConnectToPersistentSubscription;
+use Mhwk\Ouro\Transport\Message\ReadStreamEventsForward;
+use Mhwk\Ouro\Transport\Message\WriteEvents;
 use Mhwk\Ouro\Exception\RuntimeException;
 use Mhwk\Ouro\Transport\Http\Handler\PersistentSubscriptionAckEventsHandler;
 use Mhwk\Ouro\Transport\Http\Handler\PersistentSubscriptionNakEventsHandler;
 use Mhwk\Ouro\Transport\Http\Handler\ReadStreamEventsForwardHandler;
 use Mhwk\Ouro\Transport\Http\Handler\WriteEventsHandler;
 use Mhwk\Ouro\Transport\IHandleMessage;
-use Mhwk\Ouro\Message\UserCredentials;
+use Mhwk\Ouro\Transport\Message\UserCredentials;
 
 final class HttpTransport implements IHandleMessage
 {

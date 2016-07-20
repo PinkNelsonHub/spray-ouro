@@ -6,7 +6,7 @@ use Assert\Assertion;
 use Generator;
 use GuzzleHttp\Psr7\Request;
 use Icicle\Awaitable;
-use Mhwk\Ouro\Message\PersistentSubscriptionAckEvents;
+use Mhwk\Ouro\Transport\Message\PersistentSubscriptionAckEvents;
 
 final class PersistentSubscriptionAckEventsHandler extends HttpEntriesHandler
 {
@@ -36,7 +36,7 @@ final class PersistentSubscriptionAckEventsHandler extends HttpEntriesHandler
                 'POST',
                 sprintf(
                     '/subscriptions/%s/%s/ack/%s',
-                    $command->getStreamId(),
+                    $command->getEventStreamId(),
                     $command->getSubscriptionId(),
                     $processedEventId
                 )

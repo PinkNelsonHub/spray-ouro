@@ -1,6 +1,6 @@
 <?php
 
-namespace Mhwk\Ouro\Message;
+namespace Mhwk\Ouro\Transport\Message;
 
 final class ResolvedIndexedEvent
 {

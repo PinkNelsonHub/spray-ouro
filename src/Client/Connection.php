@@ -3,15 +3,19 @@
 namespace Mhwk\Ouro\Client;
 
 use Generator;
-use Mhwk\Ouro\Message\ConnectToPersistentSubscription;
-use Mhwk\Ouro\Message\NakAction;
-use Mhwk\Ouro\Message\NewEvent;
-use Mhwk\Ouro\Message\PersistentSubscriptionAckEvents;
-use Mhwk\Ouro\Message\PersistentSubscriptionNakEvents;
-use Mhwk\Ouro\Message\ReadStreamEventsComplete;
-use Mhwk\Ouro\Message\ReadStreamEventsForward;
-use Mhwk\Ouro\Message\ResolvedIndexedEvent;
-use Mhwk\Ouro\Message\WriteEvents;
+use Icicle\Observable\Observable;
+use Illuminate\Support\Facades\Log;
+use Mhwk\Ouro\Exception\EventNotExecutedException;
+use Mhwk\Ouro\Exception\EventNotSupportedException;
+use Mhwk\Ouro\Transport\Message\ConnectToPersistentSubscription;
+use Mhwk\Ouro\Transport\Message\NakAction;
+use Mhwk\Ouro\Transport\Message\NewEvent;
+use Mhwk\Ouro\Transport\Message\PersistentSubscriptionAckEvents;
+use Mhwk\Ouro\Transport\Message\PersistentSubscriptionNakEvents;
+use Mhwk\Ouro\Transport\Message\ReadStreamEventsComplete;
+use Mhwk\Ouro\Transport\Message\ReadStreamEventsForward;
+use Mhwk\Ouro\Transport\Message\ResolvedIndexedEvent;
+use Mhwk\Ouro\Transport\Message\WriteEvents;
 use Mhwk\Ouro\Transport\Http\HttpTransport;
 use Mhwk\Ouro\Transport\IHandleMessage;
 use Throwable;
@@ -123,6 +127,7 @@ final class Connection
         callable $onEventAppeared): Coroutine\Coroutine
     {
         return Coroutine\create(function() use ($subscriptionId, $streamId, $allowedInFlightMessages, $onEventAppeared) {
+            /** @var Observable $observable */
             $observable = $this->transport->handle(new ConnectToPersistentSubscription($subscriptionId, $streamId, $allowedInFlightMessages));
             $iterator = $observable->getIterator();
 
@@ -133,6 +138,22 @@ final class Connection
                         $subscriptionId,
                         $streamId,
                         [$iterator->getCurrent()->getEvent()->getEvent()->getEventId()]
+                    );
+                } catch (EventNotSupportedException $error) {
+                    yield $this->fail(
+                        $subscriptionId,
+                        $streamId,
+                        [$iterator->getCurrent()->getEvent()->getEvent()->getEventId()],
+                        $error->getMessage(),
+                        NakAction::SKIP
+                    );
+                } catch (EventNotExecutedException $error) {
+                    yield $this->fail(
+                        $subscriptionId,
+                        $streamId,
+                        [$iterator->getCurrent()->getEvent()->getEvent()->getEventId()],
+                        $error->getMessage(),
+                        NakAction::RETRY
                     );
                 } catch (Throwable $error) {
                     yield $this->fail(

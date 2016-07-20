@@ -5,9 +5,9 @@ namespace Mhwk\Ouro\Transport\Http\Handler;
 use Assert\Assertion;
 use GuzzleHttp\Psr7\Request;
 use Icicle\Observable\Emitter;
-use Mhwk\Ouro\Message\ReadStreamEventsComplete;
-use Mhwk\Ouro\Message\ReadStreamEventsForward;
-use Mhwk\Ouro\Message\ReadStreamResult;
+use Mhwk\Ouro\Transport\Message\ReadStreamEventsComplete;
+use Mhwk\Ouro\Transport\Message\ReadStreamEventsForward;
+use Mhwk\Ouro\Transport\Message\ReadStreamResult;
 
 final class ReadStreamEventsForwardHandler extends HttpEntriesHandler
 {

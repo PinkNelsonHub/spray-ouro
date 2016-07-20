@@ -1,8 +1,8 @@
 <?php
 
-namespace Mhwk\Ouro\Message;
+namespace Mhwk\Ouro\Transport\Message;
 
-final class PersistentSubscriptionAckEvents
+final class PersistentSubscriptionNakEvents
 {
     /**
      * @var string
@@ -12,23 +12,37 @@ final class PersistentSubscriptionAckEvents
     /**
      * @var string
      */
-    private $streamId;
+    private $eventStreamId;
 
     /**
-     * @var array
+     * @var string[]
      */
     private $processedEventIds;
 
     /**
-     * @param string $subscriptionId
-     * @param string $streamId
-     * @param string[] $processedEventIds
+     * @var string
      */
-    public function __construct(string $subscriptionId, string $streamId, array $processedEventIds)
+    private $message;
+    
+    /**
+     * @var NakAction
+     */
+    private $action;
+
+    /**
+     * @param string $subscriptionId
+     * @param string $eventStreamId
+     * @param array $processedEventIds
+     * @param string $message
+     * @param NakAction $action
+     */
+    public function __construct(string $subscriptionId, string $eventStreamId, array $processedEventIds, string $message, NakAction $action)
     {
         $this->subscriptionId = $subscriptionId;
-        $this->streamId = $streamId;
+        $this->eventStreamId = $eventStreamId;
         $this->setProcessedEventIds($processedEventIds);
+        $this->message = $message;
+        $this->action = $action;
     }
 
     /**
@@ -42,17 +56,33 @@ final class PersistentSubscriptionAckEvents
     /**
      * @return string
      */
-    public function getStreamId(): string
+    public function getEventStreamId()
     {
-        return $this->streamId;
+        return $this->eventStreamId;
     }
 
     /**
-     * @return array
+     * @return \string[]
      */
     public function getProcessedEventIds(): array
     {
         return $this->processedEventIds;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMessage(): string
+    {
+        return $this->message;
+    }
+
+    /**
+     * @return NakAction
+     */
+    public function getAction(): NakAction
+    {
+        return $this->action;
     }
 
     /**

@@ -4,7 +4,7 @@ use Icicle\Coroutine;
 use Icicle\Loop;
 use Mhwk\Ouro\Client\Connection;
 use Mhwk\Ouro\Client\IConnectToPersistentSubscription;
-use Mhwk\Ouro\Message\EventRecord;
+use Mhwk\Ouro\Transport\Message\EventRecord;
 
 error_reporting(-1);
 ini_set('display_errors', 1);

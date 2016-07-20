@@ -1,8 +1,8 @@
 <?php
 
-namespace Mhwk\Ouro\Message;
+namespace Mhwk\Ouro\Transport\Message;
 
-final class PersistentSubscriptionNakEvents
+final class PersistentSubscriptionAckEvents
 {
     /**
      * @var string
@@ -12,37 +12,23 @@ final class PersistentSubscriptionNakEvents
     /**
      * @var string
      */
-    private $streamId;
+    private $eventStreamId;
 
     /**
-     * @var string[]
+     * @var array
      */
     private $processedEventIds;
 
     /**
-     * @var string
-     */
-    private $message;
-    
-    /**
-     * @var NakAction
-     */
-    private $action;
-
-    /**
      * @param string $subscriptionId
-     * @param string $streamId
-     * @param array $processedEventIds
-     * @param string $message
-     * @param NakAction $action
+     * @param string $eventStreamId
+     * @param string[] $processedEventIds
      */
-    public function __construct(string $subscriptionId, string $streamId, array $processedEventIds, string $message, NakAction $action)
+    public function __construct(string $subscriptionId, string $eventStreamId, array $processedEventIds)
     {
         $this->subscriptionId = $subscriptionId;
-        $this->streamId = $streamId;
+        $this->eventStreamId = $eventStreamId;
         $this->setProcessedEventIds($processedEventIds);
-        $this->message = $message;
-        $this->action = $action;
     }
 
     /**
@@ -56,33 +42,17 @@ final class PersistentSubscriptionNakEvents
     /**
      * @return string
      */
-    public function getStreamId()
+    public function getEventStreamId(): string
     {
-        return $this->streamId;
+        return $this->eventStreamId;
     }
 
     /**
-     * @return \string[]
+     * @return array
      */
     public function getProcessedEventIds(): array
     {
         return $this->processedEventIds;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMessage(): string
-    {
-        return $this->message;
-    }
-
-    /**
-     * @return NakAction
-     */
-    public function getAction(): NakAction
-    {
-        return $this->action;
     }
 
     /**

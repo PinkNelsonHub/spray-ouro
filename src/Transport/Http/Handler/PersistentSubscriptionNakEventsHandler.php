@@ -5,7 +5,7 @@ namespace Mhwk\Ouro\Transport\Http\Handler;
 use Assert\Assertion;
 use Generator;
 use GuzzleHttp\Psr7\Request;
-use Mhwk\Ouro\Message\PersistentSubscriptionNakEvents;
+use Mhwk\Ouro\Transport\Message\PersistentSubscriptionNakEvents;
 
 final class PersistentSubscriptionNakEventsHandler extends HttpEntriesHandler
 {
@@ -35,7 +35,7 @@ final class PersistentSubscriptionNakEventsHandler extends HttpEntriesHandler
                 'POST',
                 sprintf(
                     '/subscriptions/%s/%s/nack/%s?action=%s',
-                    $command->getStreamId(),
+                    $command->getEventStreamId(),
                     $command->getSubscriptionId(),
                     $processedEventId,
                     $command->getAction()

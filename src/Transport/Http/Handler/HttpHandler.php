@@ -3,7 +3,6 @@
 namespace Mhwk\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
-use Async\Scheduler\Scheduler;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
