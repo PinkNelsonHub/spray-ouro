@@ -35,7 +35,7 @@ final class ReadStreamEventsForwardHandler extends HttpEntriesHandler
         $response = $this->send(new Request(
             'GET',
             sprintf(
-                '/streams/%s/%s/forward/%s?embed=content',
+                '/streams/%s/%s/forward/%s?embed=body',
                 $command->getStream(),
                 $command->getStart(),
                 $command->getCount()

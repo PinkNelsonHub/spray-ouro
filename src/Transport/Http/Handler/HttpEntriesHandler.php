@@ -2,6 +2,7 @@
 
 namespace Mhwk\Ouro\Transport\Http\Handler;
 
+use DateTimeImmutable;
 use Mhwk\Ouro\Message\EventRecord;
 use Mhwk\Ouro\Message\ResolvedIndexedEvent;
 
@@ -22,14 +23,13 @@ abstract class HttpEntriesHandler extends HttpHandler
     {
         return new ResolvedIndexedEvent(
             new EventRecord(
-                $entry['content']['eventStreamId'],
-                $entry['content']['eventNumber'],
-                $entry['content']['eventId'],
-                $entry['content']['eventType'],
-                $entry['content']['data'] ?: [],
-                $entry['content']['metadata'] ?: [],
-                0,
-                0
+                $entry['streamId'],
+                $entry['eventNumber'],
+                $entry['eventId'],
+                $entry['eventType'],
+                json_decode($entry['data'], true) ?: [],
+                json_decode($entry['metaData'], true) ?: [],
+                DateTimeImmutable::createFromFormat('Y-m-d\TH:i:s.uP', $entry['updated'])
             )
         );
     }

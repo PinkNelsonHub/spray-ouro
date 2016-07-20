@@ -39,7 +39,7 @@ final class ConnectToPersistentSubscriptionHandler extends HttpEntriesHandler
                 $response = $this->send(new Request(
                     'GET',
                     sprintf(
-                        '/subscriptions/%s/%s/%s?embed=content',
+                        '/subscriptions/%s/%s/%s?embed=body',
                         $command->getEventStreamId(),
                         $command->getSubscriptionId(),
                         $command->getAllowedInFlightMessages()

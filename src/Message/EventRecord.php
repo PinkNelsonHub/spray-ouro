@@ -2,6 +2,8 @@
 
 namespace Mhwk\Ouro\Message;
 
+use DateTimeImmutable;
+
 final class EventRecord
 {
     /**
@@ -35,14 +37,9 @@ final class EventRecord
     private $metadata;
 
     /**
-     * @var int
+     * @var DateTimeImmutable
      */
     private $created;
-
-    /**
-     * @var int
-     */
-    private $createdEpoch;
 
     /**
      * @param string $eventStreamId
@@ -51,10 +48,9 @@ final class EventRecord
      * @param string $eventType
      * @param array $data
      * @param array $metadata
-     * @param int $created
-     * @param int $createdEpoch
+     * @param DateTimeImmutable $created
      */
-    public function __construct(string $eventStreamId, int $eventNumber, string $eventId, string $eventType, array $data, array $metadata, int $created, int $createdEpoch)
+    public function __construct(string $eventStreamId, int $eventNumber, string $eventId, string $eventType, array $data, array $metadata, DateTimeImmutable $created)
     {
         $this->eventStreamId = $eventStreamId;
         $this->eventNumber = $eventNumber;
@@ -63,7 +59,6 @@ final class EventRecord
         $this->data = $data;
         $this->metadata = $metadata;
         $this->created = $created;
-        $this->createdEpoch = $createdEpoch;
     }
 
     /**
@@ -115,18 +110,10 @@ final class EventRecord
     }
 
     /**
-     * @return int
+     * @return DateTimeImmutable
      */
     public function getCreated()
     {
         return $this->created;
-    }
-
-    /**
-     * @return int
-     */
-    public function getCreatedEpoch()
-    {
-        return $this->createdEpoch;
     }
 }

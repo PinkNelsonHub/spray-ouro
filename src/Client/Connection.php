@@ -2,6 +2,7 @@
 
 namespace Mhwk\Ouro\Client;
 
+use Generator;
 use Mhwk\Ouro\Message\ConnectToPersistentSubscription;
 use Mhwk\Ouro\Message\NakAction;
 use Mhwk\Ouro\Message\NewEvent;
@@ -87,8 +88,12 @@ final class Connection
                 ));
 
                 foreach ($readStreamEventsComplete->getEvents() as $resolvedIndexEvent) {
-                    $onEventAppeared($resolvedIndexEvent->getEvent());
-                    yield $resolvedIndexEvent->getEvent();
+                    $result = $onEventAppeared($resolvedIndexEvent->getEvent());
+                    if ($result instanceof Generator) {
+                        yield from $result;
+                    } else {
+                        yield;
+                    }
                 }
 
                 $head = $readStreamEventsComplete->isEndOfStream();
