@@ -36,3 +36,13 @@ subscribe:
   volumes:
     - ./:/var/www
   command: php subscribe.php
+
+threading:
+  extends:
+    file: docker-common.yml
+    service: php70
+  links:
+    - eventstore
+  volumes:
+    - ./:/var/www
+  command: php threading.php
