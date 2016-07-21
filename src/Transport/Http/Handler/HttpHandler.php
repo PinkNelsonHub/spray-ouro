@@ -3,6 +3,7 @@
 namespace Mhwk\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
+use Generator;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
@@ -37,11 +38,13 @@ abstract class HttpHandler implements IHandleMessage
     /**
      * @param Request $request
      *
-     * @return Response
+     * @return Generator
      */
-    protected function send(Request $request): Response
+    protected function send(Request $request): Generator
     {
-        return $this->client->send($request);
+        $response = $this->client->send($request);
+        yield $response;
+        return $response;
     }
 
     /**

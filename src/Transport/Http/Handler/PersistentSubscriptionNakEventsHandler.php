@@ -31,7 +31,7 @@ final class PersistentSubscriptionNakEventsHandler extends HttpEntriesHandler
     function request($command)
     {
         foreach ($command->getProcessedEventIds() as $processedEventId) {
-            $response = $this->send(new Request(
+            $response = yield from $this->send(new Request(
                 'POST',
                 sprintf(
                     '/subscriptions/%s/%s/nack/%s?action=%s',
@@ -43,8 +43,6 @@ final class PersistentSubscriptionNakEventsHandler extends HttpEntriesHandler
             ));
 
             $this->assertResponse($response);
-
-            yield $response;
         }
     }
 }

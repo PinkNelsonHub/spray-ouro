@@ -32,7 +32,7 @@ final class WriteEventsHandler extends HttpHandler
      */
     function request($command)
     {
-        $response = $this->send(new Request(
+        $response = yield from $this->send(new Request(
             'POST',
             '/streams/' . $command->getEventStreamId(),
             [
@@ -43,7 +43,7 @@ final class WriteEventsHandler extends HttpHandler
 
         $this->assertResponse($response);
 
-        yield new WriteEventsCompleted(new OperationResult(OperationResult::SUCCESS), '');
+        return new WriteEventsCompleted(new OperationResult(OperationResult::SUCCESS), '');
     }
 
     /**

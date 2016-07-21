@@ -3,8 +3,9 @@
 namespace Mhwk\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
+use Generator;
 use GuzzleHttp\Psr7\Request;
-use Icicle\Observable\Emitter;
+use Icicle\Coroutine\Coroutine;
 use Mhwk\Ouro\Transport\Message\ReadStreamEventsComplete;
 use Mhwk\Ouro\Transport\Message\ReadStreamEventsForward;
 use Mhwk\Ouro\Transport\Message\ReadStreamResult;
@@ -28,11 +29,11 @@ final class ReadStreamEventsForwardHandler extends HttpEntriesHandler
      *
      * @param ReadStreamEventsForward $command
      *
-     * @return object
+     * @return Generator
      */
     function request($command)
     {
-        $response = $this->send(new Request(
+        $response = yield from $this->send(new Request(
             'GET',
             sprintf(
                 '/streams/%s/%s/forward/%s?embed=body',
@@ -49,7 +50,7 @@ final class ReadStreamEventsForwardHandler extends HttpEntriesHandler
 
         $data = json_decode($response->getBody()->getContents(), true);
 
-        yield new ReadStreamEventsComplete(
+        return new ReadStreamEventsComplete(
             $this->buildEvents($data['entries']),
             new ReadStreamResult(0),
             $data['headOfStream'],

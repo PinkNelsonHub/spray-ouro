@@ -12,12 +12,21 @@ ini_set('display_errors', 1);
 chdir(__DIR__);
 require 'vendor/autoload.php';
 
-Coroutine\create(function() {
+$coroutine = Coroutine\create(function() {
     $connection = Connection::connect('eventstore:2113', 'admin', 'changeit');
 
-    $connection->readStreamEventsForward('bar', function(EventRecord $record) {
+    yield $connection->readStreamEventsForward('bar', function(EventRecord $record) {
         var_dump($record->getEventNumber());
     });
+});
+$coroutine->capture(function(Throwable $e) {
+    echo sprintf(
+        "%s on line %s in file %s\n%s\n",
+        $e->getMessage(),
+        $e->getLine(),
+        $e->getFile(),
+        $e->getTraceAsString()
+    );
 });
 
 Loop\run();

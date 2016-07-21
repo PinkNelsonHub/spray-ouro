@@ -37,7 +37,7 @@ final class ConnectToPersistentSubscriptionHandler extends HttpEntriesHandler
     {
         return new Emitter(function(callable $emit) use ($command) {
             while ($this->running) {
-                $response = $this->send(new Request(
+                $response = yield from $this->send(new Request(
                     'GET',
                     sprintf(
                         '/subscriptions/%s/%s/%s?embed=body',
