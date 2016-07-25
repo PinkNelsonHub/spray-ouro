@@ -13,10 +13,10 @@ ini_set('display_errors', 1);
 chdir(__DIR__);
 require 'vendor/autoload.php';
 
-Coroutine\create(function() {
+$coroutine = Coroutine\create(function() {
     $connection = Connection::connect('eventstore:2113', 'admin', 'changeit');
     for ($i = 0; $i < 100; $i++) {
-        yield $connection->writeEvents('bar', -2, [
+        yield $connection->writeEventsAsync('bar', -2, [
             new NewEvent(
                 Uuid::uuid4(),
                 'Bar',
@@ -32,5 +32,15 @@ Coroutine\create(function() {
         ]);
     }
 });
+$coroutine->capture(function(Throwable $e) {
+    echo sprintf(
+        "%s on line %s in file %s\n%s\n",
+        $e->getMessage(),
+        $e->getLine(),
+        $e->getFile(),
+        $e->getTraceAsString()
+    );
+});
+
 
 Loop\run();

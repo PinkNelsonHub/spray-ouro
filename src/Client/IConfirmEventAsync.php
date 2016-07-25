@@ -2,21 +2,21 @@
 
 namespace Mhwk\Ouro\Client;
 
-use Generator;
+use Icicle\Coroutine\Coroutine;
 
-interface IConfirmEvent
+interface IConfirmEventAsync
 {
     /**
      * @param string $subscriptionId
      * @param string $streamId
      * @param array $processedStreamIds
      *
-     * @return Generator
+     * @return Coroutine
      */
-    public function acknowledge(
+    public function acknowledgeAsync(
         string $subscriptionId,
         string $streamId,
-        array $processedStreamIds): Generator;
+        array $processedStreamIds): Coroutine;
 
     /**
      * @param string $subscriptionId
@@ -25,12 +25,12 @@ interface IConfirmEvent
      * @param string $message
      * @param int $action
      *
-     * @return Generator
+     * @return Coroutine
      */
-    public function fail(
+    public function failAsync(
         string $subscriptionId,
         string $streamId,
         array $processedStreamIds,
         string $message,
-        int $action): Generator;
+        int $action): Coroutine;
 }

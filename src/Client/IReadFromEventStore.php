@@ -2,7 +2,7 @@
 
 namespace Mhwk\Ouro\Client;
 
-use Icicle\Coroutine\Coroutine;
+use Generator;
 
 interface IReadFromEventStore
 {
@@ -12,7 +12,11 @@ interface IReadFromEventStore
      * @param int $start
      * @param int|null $limit
      *
-     * @return Coroutine
+     * @return Generator
      */
-    function readStreamEventsForward(string $stream, callable $onEventAppeared, int $start = 0, int $limit = null): Coroutine;
+    function readStreamEventsForward(
+        string $stream,
+        callable $onEventAppeared,
+        int $start = 0,
+        int $limit = null): Generator;
 }

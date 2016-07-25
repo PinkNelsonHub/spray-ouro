@@ -15,7 +15,7 @@ require 'vendor/autoload.php';
 $coroutine = Coroutine\create(function() {
     $connection = Connection::connect('eventstore:2113', 'admin', 'changeit');
 
-    yield $connection->readStreamEventsForward('bar', function(EventRecord $record) {
+    yield $connection->readStreamEventsForwardAsync('bar', function(EventRecord $record) {
         var_dump($record->getEventNumber());
     });
 });

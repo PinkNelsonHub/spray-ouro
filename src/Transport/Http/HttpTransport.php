@@ -3,11 +3,17 @@
 namespace Mhwk\Ouro\Transport\Http;
 
 use GuzzleHttp\Client as GuzzleClient;
+use Mhwk\Ouro\Transport\Http\Handler\CreatePersistentSubscriptionHandler;
+use Mhwk\Ouro\Transport\Http\Handler\DeletePersistentSubscriptionHandler;
+use Mhwk\Ouro\Transport\Http\Handler\UpdatePersistentSubscriptionHandler;
+use Mhwk\Ouro\Transport\Message\CreatePersistentSubscription;
+use Mhwk\Ouro\Transport\Message\DeletePersistentSubscription;
 use Mhwk\Ouro\Transport\Message\PersistentSubscriptionAckEvents;
 use Mhwk\Ouro\Transport\Message\PersistentSubscriptionNakEvents;
 use Mhwk\Ouro\Transport\Http\Handler\ConnectToPersistentSubscriptionHandler;
 use Mhwk\Ouro\Transport\Message\ConnectToPersistentSubscription;
 use Mhwk\Ouro\Transport\Message\ReadStreamEventsForward;
+use Mhwk\Ouro\Transport\Message\UpdatePersistentSubscription;
 use Mhwk\Ouro\Transport\Message\WriteEvents;
 use Mhwk\Ouro\Exception\RuntimeException;
 use Mhwk\Ouro\Transport\Http\Handler\PersistentSubscriptionAckEventsHandler;
@@ -44,6 +50,9 @@ final class HttpTransport implements IHandleMessage
         $this->credentials = $credentials;
         $this->handlers[ReadStreamEventsForward::class] = new ReadStreamEventsForwardHandler($this->client);
         $this->handlers[WriteEvents::class] = new WriteEventsHandler($this->client);
+        $this->handlers[CreatePersistentSubscription::class] = new CreatePersistentSubscriptionHandler($this->client);
+        $this->handlers[UpdatePersistentSubscription::class] = new UpdatePersistentSubscriptionHandler($this->client);
+        $this->handlers[DeletePersistentSubscription::class] = new DeletePersistentSubscriptionHandler($this->client);
         $this->handlers[ConnectToPersistentSubscription::class] = new ConnectToPersistentSubscriptionHandler($this->client);
         $this->handlers[PersistentSubscriptionAckEvents::class] = new PersistentSubscriptionAckEventsHandler($this->client);
         $this->handlers[PersistentSubscriptionNakEvents::class] = new PersistentSubscriptionNakEventsHandler($this->client);

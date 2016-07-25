@@ -4,9 +4,13 @@ namespace Mhwk\Ouro\Client;
 
 interface IConnectedToEventStore
     extends IWriteToEventStore,
+            IWriteToEventStoreAsync,
             IReadFromEventStore,
+            IReadFromEventStoreAsync,
             IConnectToPersistentSubscription,
-            IConfirmEvent
+            IConnectToPersistentSubscriptionAsync,
+            IConfirmEvent,
+            IConfirmEventAsync
 {
 
 }

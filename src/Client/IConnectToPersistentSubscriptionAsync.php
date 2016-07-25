@@ -2,9 +2,9 @@
 
 namespace Mhwk\Ouro\Client;
 
-use Generator;
+use Icicle\Coroutine\Coroutine;
 
-interface IConnectToPersistentSubscription
+interface IConnectToPersistentSubscriptionAsync
 {
     /**
      * Connect to a persistent subscription.
@@ -14,45 +14,45 @@ interface IConnectToPersistentSubscription
      * @param int $allowedInFlightMessages
      * @param callable $onEventAppeared
      *
-     * @return Generator
+     * @return Coroutine
      */
-    public function subscribePersistent(
+    public function subscribePersistentAsync(
         string $subscriptionId,
         string $streamId,
         int $allowedInFlightMessages,
-        callable $onEventAppeared): Generator;
+        callable $onEventAppeared): Coroutine;
 
     /**
      * @param string $groupName
      * @param string $streamId
      * @param PersistentSubscriptionSettings $settings
      *
-     * @return Generator
+     * @return Coroutine
      */
-    public function createPersistentSubscription(
+    public function createPersistentSubscriptionAsync(
         string $groupName,
         string $streamId,
-        PersistentSubscriptionSettings $settings = null): Generator;
+        PersistentSubscriptionSettings $settings = null): Coroutine;
 
     /**
      * @param string $groupName
      * @param string $streamId
      * @param PersistentSubscriptionSettings $settings
      *
-     * @return Generator
+     * @return Coroutine
      */
-    public function updatePersistentSubscription(
+    public function updatePersistentSubscriptionAsync(
         string $groupName,
         string $streamId,
-        PersistentSubscriptionSettings $settings = null): Generator;
+        PersistentSubscriptionSettings $settings = null): Coroutine;
 
     /**
      * @param string $groupName
      * @param string $streamId
      *
-     * @return Generator
+     * @return Coroutine
      */
-    public function deletePersistentSubscription(
+    public function deletePersistentSubscriptionAsync(
         string $groupName,
-        string $streamId): Generator;
+        string $streamId): Coroutine;
 }

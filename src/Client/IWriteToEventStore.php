@@ -2,7 +2,7 @@
 
 namespace Mhwk\Ouro\Client;
 
-use Icicle\Coroutine\Coroutine;
+use Generator;
 
 interface IWriteToEventStore
 {
@@ -11,7 +11,7 @@ interface IWriteToEventStore
      * @param int $expectedEventNumber
      * @param array $events
      *
-     * @return Coroutine
+     * @return Generator
      */
-    function writeEvents(string $stream, int $expectedEventNumber, array $events): Coroutine;
+    function writeEvents(string $stream, int $expectedEventNumber, array $events): Generator;
 }

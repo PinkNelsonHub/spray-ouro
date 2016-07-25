@@ -4,10 +4,11 @@ namespace Mhwk\Ouro\Client;
 
 use Generator;
 use Icicle\Observable\Observable;
-use Illuminate\Support\Facades\Log;
 use Mhwk\Ouro\Exception\EventNotExecutedException;
 use Mhwk\Ouro\Exception\EventNotSupportedException;
 use Mhwk\Ouro\Transport\Message\ConnectToPersistentSubscription;
+use Mhwk\Ouro\Transport\Message\CreatePersistentSubscription;
+use Mhwk\Ouro\Transport\Message\DeletePersistentSubscription;
 use Mhwk\Ouro\Transport\Message\NakAction;
 use Mhwk\Ouro\Transport\Message\NewEvent;
 use Mhwk\Ouro\Transport\Message\PersistentSubscriptionAckEvents;
@@ -15,6 +16,7 @@ use Mhwk\Ouro\Transport\Message\PersistentSubscriptionNakEvents;
 use Mhwk\Ouro\Transport\Message\ReadStreamEventsComplete;
 use Mhwk\Ouro\Transport\Message\ReadStreamEventsForward;
 use Mhwk\Ouro\Transport\Message\ResolvedIndexedEvent;
+use Mhwk\Ouro\Transport\Message\UpdatePersistentSubscription;
 use Mhwk\Ouro\Transport\Message\WriteEvents;
 use Mhwk\Ouro\Transport\Http\HttpTransport;
 use Mhwk\Ouro\Transport\IHandleMessage;
@@ -58,11 +60,28 @@ final class Connection
      *
      * @return Coroutine\Coroutine
      */
-    function writeEvents(string $stream, int $expectedEventNumber, array $events): Coroutine\Coroutine
+    function writeEventsAsync(string $stream, int $expectedEventNumber, array $events): Coroutine\Coroutine
     {
-        return Coroutine\create(function() use ($stream, $expectedEventNumber, $events) {
-            yield $this->transport->handle(new WriteEvents($stream, $expectedEventNumber, $events, false));
-        });
+        return Coroutine\create(
+            [$this, 'writeEvents'],
+            $stream,
+            $expectedEventNumber,
+            $events
+        );
+    }
+
+    /**
+     * @param string $stream
+     * @param int $expectedEventNumber
+     * @param array $events
+     *
+     * @return Generator
+     */
+    function writeEvents(string $stream, int $expectedEventNumber, array $events): Generator
+    {
+        $result = yield $this->transport->handle(new WriteEvents($stream, $expectedEventNumber, $events, false));
+
+        return $result;
     }
 
     /**
@@ -71,43 +90,209 @@ final class Connection
      *
      * @return Coroutine\Coroutine
      */
-    function readStreamEventsForward(string $stream, callable $onEventAppeared, int $start = 0, int $limit = null): Coroutine\Coroutine
+    function readStreamEventsForwardAsync(string $stream, callable $onEventAppeared, int $start = 0, int $limit = null): Coroutine\Coroutine
     {
-        return Coroutine\create(function() use ($stream, $onEventAppeared, $start, $limit) {
-            $head = false;
-            $count = 50;
+        return Coroutine\create(
+            [$this, 'readStreamEventsForward'],
+            $stream,
+            $onEventAppeared,
+            $start,
+            $limit
+        );
+    }
 
-            while ( ! $head) {
-                /** @var ReadStreamEventsComplete $readStreamEventsComplete */
-                /** @var ResolvedIndexedEvent $resolvedIndexEvent */
-                if (null !== $limit && $start + $count >= $limit) {
-                    $count = $limit - $start;
-                }
+    /**
+     * @param string $stream
+     * @param callable $onEventAppeared
+     * @param int $start
+     * @param int $limit
+     *
+     * @return Generator
+     */
+    function readStreamEventsForward(
+        string $stream,
+        callable $onEventAppeared,
+        int $start = 0,
+        int $limit = null): Generator
+    {
+        $head = false;
+        $count = 50;
 
-                $readStreamEventsComplete = yield $this->transport->handle(new ReadStreamEventsForward(
-                    $stream,
-                    $start,
-                    $count,
-                    false
-                ));
+        while (!$head) {
+            /** @var ReadStreamEventsComplete $readStreamEventsComplete */
+            /** @var ResolvedIndexedEvent $resolvedIndexEvent */
+            if (null !== $limit && $start + $count >= $limit) {
+                $count = $limit - $start;
+            }
 
-                foreach ($readStreamEventsComplete->getEvents() as $resolvedIndexEvent) {
-                    $result = $onEventAppeared($resolvedIndexEvent->getEvent());
-                    if ($result instanceof Generator) {
-                        yield from $result;
-                    } else {
-                        yield;
-                    }
-                }
+            $readStreamEventsComplete = yield $this->transport->handle(new ReadStreamEventsForward(
+                $stream,
+                $start,
+                $count,
+                false
+            ));
 
-                $head = $readStreamEventsComplete->isEndOfStream();
-                $start += $count;
-
-                if (null !== $limit && $start + $count >= $limit) {
-                    break;
+            foreach ($readStreamEventsComplete->getEvents() as $resolvedIndexEvent) {
+                $result = $onEventAppeared($resolvedIndexEvent->getEvent());
+                if ($result instanceof Generator) {
+                    yield from $result;
+                } else {
+                    yield;
                 }
             }
-        });
+
+            $head = $readStreamEventsComplete->isEndOfStream();
+            $start += $count;
+
+            if (null !== $limit && $start + $count >= $limit) {
+                break;
+            }
+        }
+    }
+
+    /**
+     * @param string $groupName
+     * @param string $streamId
+     * @param PersistentSubscriptionSettings $settings
+     *
+     * @return Coroutine\Coroutine
+     */
+    function createPersistentSubscriptionAsync(
+        string $groupName,
+        string $streamId,
+        PersistentSubscriptionSettings $settings = null): Coroutine\Coroutine
+    {
+        return Coroutine\create(
+            [$this, 'createPersistentSubscription'],
+            $groupName,
+            $streamId,
+            $settings
+        );
+    }
+
+    /**
+     * @param string $groupName
+     * @param string $streamId
+     * @param PersistentSubscriptionSettings $settings
+     *
+     * @return Generator
+     */
+    function createPersistentSubscription(
+        string $groupName,
+        string $streamId,
+        PersistentSubscriptionSettings $settings = null): Generator
+    {
+        $settings = $settings ?: PersistentSubscriptionSettings::create();
+        $result = yield $this->transport->handle(new CreatePersistentSubscription(
+            $groupName,
+            $streamId,
+            $settings->isResolveLinkTos(),
+            $settings->getStartFrom(),
+            $settings->getMessageTimeout()->toMilliseconds(),
+            $settings->isExtraStatistics(),
+            $settings->getLiveBufferSize(),
+            $settings->getReadBatchSize(),
+            $settings->getHistoryBufferSize(),
+            $settings->getMaxRetryCount(),
+            $settings->getNamedConsumerStrategy() === SystemConsumerStrategies::ROUND_ROBIN,
+            $settings->getCheckPointAfter()->toMilliseconds(),
+            $settings->getMaxCheckPointCount(),
+            $settings->getMinCheckPointCount(),
+            $settings->getMaxSubscriberCount(),
+            $settings->getNamedConsumerStrategy()
+        ));
+
+        return $result;
+    }
+
+    /**
+     * @param string $groupName
+     * @param string $streamId
+     * @param PersistentSubscriptionSettings $settings
+     *
+     * @return Coroutine\Coroutine
+     */
+    function updatePersistentSubscriptionAsync(
+        string $groupName,
+        string $streamId,
+        PersistentSubscriptionSettings $settings = null): Coroutine\Coroutine
+    {
+        return Coroutine\create(
+            [$this, 'updatePersistentSubscription'],
+            $groupName,
+            $streamId,
+            $settings
+        );
+    }
+
+    /**
+     * @param string $groupName
+     * @param string $streamId
+     * @param PersistentSubscriptionSettings $settings
+     *
+     * @return Generator
+     */
+    function updatePersistentSubscription(
+        string $groupName,
+        string $streamId,
+        PersistentSubscriptionSettings $settings = null): Generator
+    {
+        $settings = $settings ?: PersistentSubscriptionSettings::create();
+        $result = yield $this->transport->handle(new UpdatePersistentSubscription(
+            $groupName,
+            $streamId,
+            $settings->isResolveLinkTos(),
+            $settings->getStartFrom(),
+            $settings->getMessageTimeout()->toMilliseconds(),
+            $settings->isExtraStatistics(),
+            $settings->getLiveBufferSize(),
+            $settings->getReadBatchSize(),
+            $settings->getHistoryBufferSize(),
+            $settings->getMaxRetryCount(),
+            $settings->getNamedConsumerStrategy() === SystemConsumerStrategies::ROUND_ROBIN,
+            $settings->getCheckPointAfter()->toMilliseconds(),
+            $settings->getMaxCheckPointCount(),
+            $settings->getMinCheckPointCount(),
+            $settings->getMaxSubscriberCount(),
+            $settings->getNamedConsumerStrategy()
+        ));
+
+        return $result;
+    }
+
+    /**
+     * @param string $groupName
+     * @param string $streamId
+     *
+     * @return Coroutine\Coroutine
+     */
+    function deletePersistentSubscriptionAsync(
+        string $groupName,
+        string $streamId): Coroutine\Coroutine
+    {
+        return Coroutine\create(
+            [$this, 'deletePersistentSubscription'],
+            $groupName,
+            $streamId
+        );
+    }
+
+    /**
+     * @param string $groupName
+     * @param string $streamId
+     *
+     * @return Generator
+     */
+    function deletePersistentSubscription(
+        string $groupName,
+        string $streamId): Generator
+    {
+        $result = yield $this->transport->handle(new DeletePersistentSubscription(
+            $groupName,
+            $streamId
+        ));
+
+        return $result;
     }
 
     /**
@@ -120,53 +305,78 @@ final class Connection
      *
      * @return Coroutine\Coroutine
      */
-    function subscribePersistent(
+    function subscribePersistentAsync(
         string $subscriptionId,
         string $streamId,
         int $allowedInFlightMessages,
         callable $onEventAppeared): Coroutine\Coroutine
     {
-        return Coroutine\create(function() use ($subscriptionId, $streamId, $allowedInFlightMessages, $onEventAppeared) {
-            /** @var Observable $observable */
-            $observable = $this->transport->handle(new ConnectToPersistentSubscription($subscriptionId, $streamId, $allowedInFlightMessages));
-            $iterator = $observable->getIterator();
+        return Coroutine\create(
+            [$this, 'subscribePersistent'],
+            $subscriptionId,
+            $streamId,
+            $allowedInFlightMessages,
+            $onEventAppeared
+        );
+    }
 
-            while (yield $iterator->isValid()) {
-                try {
-                    yield $onEventAppeared($iterator->getCurrent()->getEvent()->getEvent());
-                    yield $this->acknowledge(
-                        $subscriptionId,
-                        $streamId,
-                        [$iterator->getCurrent()->getEvent()->getEvent()->getEventId()]
-                    );
-                } catch (EventNotSupportedException $error) {
-                    yield $this->fail(
-                        $subscriptionId,
-                        $streamId,
-                        [$iterator->getCurrent()->getEvent()->getEvent()->getEventId()],
-                        $error->getMessage(),
-                        NakAction::SKIP
-                    );
-                } catch (EventNotExecutedException $error) {
-                    yield $this->fail(
-                        $subscriptionId,
-                        $streamId,
-                        [$iterator->getCurrent()->getEvent()->getEvent()->getEventId()],
-                        $error->getMessage(),
-                        NakAction::RETRY
-                    );
-                } catch (Throwable $error) {
-                    yield $this->fail(
-                        $subscriptionId,
-                        $streamId,
-                        [$iterator->getCurrent()->getEvent()->getEvent()->getEventId()],
-                        $error->getMessage(),
-                        NakAction::PARK
-                    );
-                    throw $error;
-                }
+    /**
+     * @param string $subscriptionId
+     * @param string $streamId
+     * @param int $allowedInFlightMessages
+     * @param callable $onEventAppeared
+     *
+     * @return Generator
+     */
+    function subscribePersistent(
+        string $subscriptionId,
+        string $streamId,
+        int $allowedInFlightMessages,
+        callable $onEventAppeared): Generator
+    {
+        /** @var Observable $observable */
+        $observable = $this->transport->handle(new ConnectToPersistentSubscription(
+            $subscriptionId,
+            $streamId,
+            $allowedInFlightMessages
+        ));
+
+        $iterator = $observable->getIterator();
+        while (yield $iterator->isValid()) {
+            try {
+                yield $onEventAppeared($iterator->getCurrent()->getEvent()->getEvent());
+                yield $this->acknowledgeAsync(
+                    $subscriptionId,
+                    $streamId,
+                    [$iterator->getCurrent()->getEvent()->getEvent()->getEventId()]
+                );
+            } catch (EventNotSupportedException $error) {
+                yield $this->failAsync(
+                    $subscriptionId,
+                    $streamId,
+                    [$iterator->getCurrent()->getEvent()->getEvent()->getEventId()],
+                    $error->getMessage(),
+                    NakAction::SKIP
+                );
+            } catch (EventNotExecutedException $error) {
+                yield $this->failAsync(
+                    $subscriptionId,
+                    $streamId,
+                    [$iterator->getCurrent()->getEvent()->getEvent()->getEventId()],
+                    $error->getMessage(),
+                    NakAction::RETRY
+                );
+            } catch (Throwable $error) {
+                yield $this->failAsync(
+                    $subscriptionId,
+                    $streamId,
+                    [$iterator->getCurrent()->getEvent()->getEvent()->getEventId()],
+                    $error->getMessage(),
+                    NakAction::PARK
+                );
+                throw $error;
             }
-        });
+        }
     }
 
     /**
@@ -176,15 +386,32 @@ final class Connection
      *
      * @return Coroutine\Coroutine
      */
-    function acknowledge(string $subscriptionId, string $streamId, array $processedStreamIds): Coroutine\Coroutine
+    function acknowledgeAsync(string $subscriptionId, string $streamId, array $processedStreamIds): Coroutine\Coroutine
     {
-        return Coroutine\create(function() use ($subscriptionId, $streamId, $processedStreamIds) {
-            yield from $this->transport->handle(new PersistentSubscriptionAckEvents(
-                $subscriptionId,
-                $streamId,
-                $processedStreamIds
-            ));
-        });
+        return Coroutine\create(
+            [$this, 'acknowledge'],
+            $subscriptionId,
+            $streamId,
+            $processedStreamIds
+        );
+    }
+
+    /**
+     * @param string $subscriptionId
+     * @param string $streamId
+     * @param array $processedStreamIds
+     *
+     * @return Generator
+     */
+    function acknowledge(string $subscriptionId, string $streamId, array $processedStreamIds): Generator
+    {
+        $result = yield from $this->transport->handle(new PersistentSubscriptionAckEvents(
+            $subscriptionId,
+            $streamId,
+            $processedStreamIds
+        ));
+
+        return $result;
     }
 
     /**
@@ -196,16 +423,47 @@ final class Connection
      *
      * @return Coroutine\Coroutine
      */
-    function fail(string $subscriptionId, string $streamId, array $processedStreamIds, string $message, int $action): Coroutine\Coroutine
+    function failAsync(
+        string $subscriptionId,
+        string $streamId,
+        array $processedStreamIds,
+        string $message,
+        int $action): Coroutine\Coroutine
     {
-        return Coroutine\create(function() use ($subscriptionId, $streamId, $processedStreamIds, $message, $action) {
-            yield from $this->transport->handle(new PersistentSubscriptionNakEvents(
-                $subscriptionId,
-                $streamId,
-                $processedStreamIds,
-                $message,
-                new NakAction($action)
-            ));
-        });
+        return Coroutine\create(
+            [$this, 'fail'],
+            $subscriptionId,
+            $streamId,
+            $processedStreamIds,
+            $message,
+            $action
+        );
+    }
+
+    /**
+     * @param string $subscriptionId
+     * @param string $streamId
+     * @param array $processedStreamIds
+     * @param string $message
+     * @param int $action
+     *
+     * @return Generator
+     */
+    function fail(
+        string $subscriptionId,
+        string $streamId,
+        array $processedStreamIds,
+        string $message,
+        int $action): Generator
+    {
+        $result = yield from $this->transport->handle(new PersistentSubscriptionNakEvents(
+            $subscriptionId,
+            $streamId,
+            $processedStreamIds,
+            $message,
+            new NakAction($action)
+        ));
+
+        return $result;
     }
 }
