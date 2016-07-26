@@ -48,14 +48,14 @@ final class HttpTransport implements IHandleMessage
     {
         $this->client = $client;
         $this->credentials = $credentials;
-        $this->handlers[ReadStreamEventsForward::class] = new ReadStreamEventsForwardHandler($this->client);
-        $this->handlers[WriteEvents::class] = new WriteEventsHandler($this->client);
-        $this->handlers[CreatePersistentSubscription::class] = new CreatePersistentSubscriptionHandler($this->client);
-        $this->handlers[UpdatePersistentSubscription::class] = new UpdatePersistentSubscriptionHandler($this->client);
-        $this->handlers[DeletePersistentSubscription::class] = new DeletePersistentSubscriptionHandler($this->client);
-        $this->handlers[ConnectToPersistentSubscription::class] = new ConnectToPersistentSubscriptionHandler($this->client);
-        $this->handlers[PersistentSubscriptionAckEvents::class] = new PersistentSubscriptionAckEventsHandler($this->client);
-        $this->handlers[PersistentSubscriptionNakEvents::class] = new PersistentSubscriptionNakEventsHandler($this->client);
+        $this->handlers[ReadStreamEventsForward::class] = new ReadStreamEventsForwardHandler($this->client, $this->credentials);
+        $this->handlers[WriteEvents::class] = new WriteEventsHandler($this->client, $this->credentials);
+        $this->handlers[CreatePersistentSubscription::class] = new CreatePersistentSubscriptionHandler($this->client, $this->credentials);
+        $this->handlers[UpdatePersistentSubscription::class] = new UpdatePersistentSubscriptionHandler($this->client, $this->credentials);
+        $this->handlers[DeletePersistentSubscription::class] = new DeletePersistentSubscriptionHandler($this->client, $this->credentials);
+        $this->handlers[ConnectToPersistentSubscription::class] = new ConnectToPersistentSubscriptionHandler($this->client, $this->credentials);
+        $this->handlers[PersistentSubscriptionAckEvents::class] = new PersistentSubscriptionAckEventsHandler($this->client, $this->credentials);
+        $this->handlers[PersistentSubscriptionNakEvents::class] = new PersistentSubscriptionNakEventsHandler($this->client, $this->credentials);
     }
 
     /**

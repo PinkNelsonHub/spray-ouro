@@ -59,8 +59,6 @@ final class UpdatePersistentSubscriptionHandler extends HttpHandler
             ])
         ));
 
-        $this->assertResponse($response);
-
-        yield new UpdatePersistentSubscriptionCompleted(UpdatePersistentSubscriptionResult::success(), '');
+        return new UpdatePersistentSubscriptionCompleted(UpdatePersistentSubscriptionResult::success(), '');
     }
 }

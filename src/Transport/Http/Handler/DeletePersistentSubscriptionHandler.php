@@ -44,8 +44,6 @@ final class DeletePersistentSubscriptionHandler extends HttpHandler
             ]
         ));
 
-        $this->assertResponse($response);
-
         yield new DeletePersistentSubscriptionCompleted(DeletePersistentSubscriptionResult::success(), '');
     }
 }

@@ -46,8 +46,6 @@ final class ReadStreamEventsForwardHandler extends HttpEntriesHandler
             ]
         ));
 
-        $this->assertResponse($response);
-
         $data = json_decode($response->getBody()->getContents(), true);
 
         return new ReadStreamEventsComplete(

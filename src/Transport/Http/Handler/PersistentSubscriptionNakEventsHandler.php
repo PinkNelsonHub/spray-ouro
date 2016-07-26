@@ -41,8 +41,6 @@ final class PersistentSubscriptionNakEventsHandler extends HttpEntriesHandler
                     $command->getAction()
                 )
             ));
-
-            $this->assertResponse($response);
         }
     }
 }

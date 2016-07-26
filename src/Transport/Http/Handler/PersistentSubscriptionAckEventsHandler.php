@@ -41,8 +41,6 @@ final class PersistentSubscriptionAckEventsHandler extends HttpEntriesHandler
                     $processedEventId
                 )
             ));
-
-            $this->assertResponse($response);
         }
     }
 }

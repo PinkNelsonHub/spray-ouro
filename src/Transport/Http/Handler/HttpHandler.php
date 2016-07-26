@@ -5,9 +5,14 @@ namespace Mhwk\Ouro\Transport\Http\Handler;
 use Assert\Assertion;
 use Generator;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use Icicle\Coroutine\Coroutine;
+use Icicle\Loop;
 use Mhwk\Ouro\Transport\IHandleMessage;
+use Mhwk\Ouro\Transport\Message\UserCredentials;
+use Throwable;
 
 abstract class HttpHandler implements IHandleMessage
 {
@@ -17,11 +22,18 @@ abstract class HttpHandler implements IHandleMessage
     private $client;
 
     /**
-     * @param Client $client
+     * @var UserCredentials
      */
-    public function __construct(Client $client)
+    private $credentials;
+
+    /**
+     * @param Client $client
+     * @param UserCredentials $credentials
+     */
+    public function __construct(Client $client, UserCredentials $credentials)
     {
         $this->client = $client;
+        $this->credentials = $credentials;
     }
 
     /**
@@ -38,13 +50,19 @@ abstract class HttpHandler implements IHandleMessage
     /**
      * @param Request $request
      *
-     * @return Generator
+     * @return Response
      */
     protected function send(Request $request): Generator
     {
-        $response = $this->client->send($request);
-        yield $response;
-        return $response;
+        try {
+            $response = yield $this->client->send($request, [
+                'auth' => [$this->credentials->getUsername(), $this->credentials->getPassword()]
+            ]);
+            return $response;
+        } catch (RequestException $error) {
+            $this->assertResponse($error->getResponse());
+            return $error->getResponse();
+        }
     }
 
     /**

@@ -4,6 +4,7 @@ namespace Mhwk\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
 use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use Mhwk\Ouro\Transport\Message\CreatePersistentSubscription;
 use Mhwk\Ouro\Transport\Message\CreatePersistentSubscriptionCompleted;
 use Mhwk\Ouro\Transport\Message\CreatePersistentSubscriptionResult;
@@ -59,8 +60,18 @@ final class CreatePersistentSubscriptionHandler extends HttpHandler
             ])
         ));
 
-        $this->assertResponse($response);
+        return new CreatePersistentSubscriptionCompleted(CreatePersistentSubscriptionResult::success(), '');
+    }
 
-        yield new CreatePersistentSubscriptionCompleted(CreatePersistentSubscriptionResult::success(), '');
+    /**
+     * @param Response $response
+     */
+    protected function assertResponse(Response $response)
+    {
+        Assertion::inArray(
+            $response->getStatusCode(),
+            [200, 201, 202, 409],
+            sprintf('Failed request [%s]: %s', $response->getStatusCode(), $response->getReasonPhrase())
+        );
     }
 }

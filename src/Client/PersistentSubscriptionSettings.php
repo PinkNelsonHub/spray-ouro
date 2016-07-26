@@ -118,7 +118,8 @@ final class PersistentSubscriptionSettings
     {
         return new self(
             true,
-            -1,
+            0,
+            false,
             TimeSpan::fromSeconds(30),
             500,
             500,
