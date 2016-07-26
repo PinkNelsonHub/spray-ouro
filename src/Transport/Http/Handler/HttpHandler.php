@@ -4,20 +4,17 @@ namespace Mhwk\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
 use Generator;
-use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Icicle\Coroutine\Coroutine;
-use Icicle\Loop;
 use Mhwk\Ouro\Transport\IHandleMessage;
 use Mhwk\Ouro\Transport\Message\UserCredentials;
-use Throwable;
 
 abstract class HttpHandler implements IHandleMessage
 {
     /**
-     * @var Client
+     * @var ClientInterface
      */
     private $client;
 
@@ -27,10 +24,10 @@ abstract class HttpHandler implements IHandleMessage
     private $credentials;
 
     /**
-     * @param Client $client
+     * @param ClientInterface $client
      * @param UserCredentials $credentials
      */
-    public function __construct(Client $client, UserCredentials $credentials)
+    public function __construct(ClientInterface $client, UserCredentials $credentials)
     {
         $this->client = $client;
         $this->credentials = $credentials;
