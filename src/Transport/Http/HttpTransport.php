@@ -3,6 +3,7 @@
 namespace Mhwk\Ouro\Transport\Http;
 
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\ClientInterface;
 use Mhwk\Ouro\Transport\Http\Handler\CreatePersistentSubscriptionHandler;
 use Mhwk\Ouro\Transport\Http\Handler\DeletePersistentSubscriptionHandler;
 use Mhwk\Ouro\Transport\Http\Handler\UpdatePersistentSubscriptionHandler;
@@ -26,7 +27,7 @@ use Mhwk\Ouro\Transport\Message\UserCredentials;
 final class HttpTransport implements IHandleMessage
 {
     /**
-     * @var GuzzleClient
+     * @var ClientInterface
      */
     private $client;
 
@@ -41,10 +42,10 @@ final class HttpTransport implements IHandleMessage
     private $handlers;
 
     /**
-     * @param GuzzleClient $client
+     * @param ClientInterface $client
      * @param UserCredentials $credentials
      */
-    public function __construct(GuzzleClient $client, UserCredentials $credentials)
+    function __construct(ClientInterface $client, UserCredentials $credentials)
     {
         $this->client = $client;
         $this->credentials = $credentials;
@@ -65,7 +66,7 @@ final class HttpTransport implements IHandleMessage
      *
      * @return HttpTransport
      */
-    public static function factory($baseUrl, $username, $password)
+    static function factory($baseUrl, $username, $password)
     {
         return new HttpTransport(
             new GuzzleClient([
@@ -79,7 +80,7 @@ final class HttpTransport implements IHandleMessage
     /**
      * @param object $message
      */
-    public function handle($message)
+    function handle($message)
     {
         if ( ! isset($this->handlers[get_class($message)])) {
             throw new RuntimeException(sprintf(
