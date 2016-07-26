@@ -53,7 +53,7 @@ final class ConnectToPersistentSubscriptionHandler extends HttpEntriesHandler
                 $data = json_decode($response->getBody()->getContents(), true);
 
                 if (count($data['entries'])) {
-                    foreach ($data['entries'] as $entry) {
+                    foreach (array_reverse($data['entries']) as $entry) {
                         try {
                             $this->assertEvent($entry);
                             yield $emit(new PersistentSubsciptionStreamEventAppeared(
