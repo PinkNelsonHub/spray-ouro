@@ -1,12 +1,12 @@
 <?php
 
-namespace Mhwk\Ouro\Transport\Http\Handler;
+namespace Spray\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
 use Generator;
 use GuzzleHttp\Psr7\Request;
 use Icicle\Awaitable;
-use Mhwk\Ouro\Transport\Message\PersistentSubscriptionAckEvents;
+use Spray\Ouro\Transport\Message\PersistentSubscriptionAckEvents;
 
 final class PersistentSubscriptionAckEventsHandler extends HttpEntriesHandler
 {

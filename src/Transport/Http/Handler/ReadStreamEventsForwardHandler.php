@@ -1,14 +1,14 @@
 <?php
 
-namespace Mhwk\Ouro\Transport\Http\Handler;
+namespace Spray\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
 use Generator;
 use GuzzleHttp\Psr7\Request;
 use Icicle\Coroutine\Coroutine;
-use Mhwk\Ouro\Transport\Message\ReadStreamEventsComplete;
-use Mhwk\Ouro\Transport\Message\ReadStreamEventsForward;
-use Mhwk\Ouro\Transport\Message\ReadStreamResult;
+use Spray\Ouro\Transport\Message\ReadStreamEventsComplete;
+use Spray\Ouro\Transport\Message\ReadStreamEventsForward;
+use Spray\Ouro\Transport\Message\ReadStreamResult;
 
 final class ReadStreamEventsForwardHandler extends HttpEntriesHandler
 {

@@ -1,7 +1,7 @@
 <?php
 
-use Mhwk\Ouro\Client\Connection;
-use Mhwk\Ouro\Transport\Message\NewEvent;
+use Spray\Ouro\Client\Connection;
+use Spray\Ouro\Transport\Message\NewEvent;
 use Icicle\Awaitable;
 use Icicle\Coroutine;
 use Icicle\Loop;

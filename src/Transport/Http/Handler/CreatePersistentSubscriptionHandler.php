@@ -1,13 +1,13 @@
 <?php
 
-namespace Mhwk\Ouro\Transport\Http\Handler;
+namespace Spray\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Mhwk\Ouro\Transport\Message\CreatePersistentSubscription;
-use Mhwk\Ouro\Transport\Message\CreatePersistentSubscriptionCompleted;
-use Mhwk\Ouro\Transport\Message\CreatePersistentSubscriptionResult;
+use Spray\Ouro\Transport\Message\CreatePersistentSubscription;
+use Spray\Ouro\Transport\Message\CreatePersistentSubscriptionCompleted;
+use Spray\Ouro\Transport\Message\CreatePersistentSubscriptionResult;
 
 final class CreatePersistentSubscriptionHandler extends HttpHandler
 {

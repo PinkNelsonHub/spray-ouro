@@ -1,13 +1,13 @@
 <?php
 
-namespace Mhwk\Ouro\Transport\Http\Handler;
+namespace Spray\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
 use GuzzleHttp\Psr7\Request;
-use Mhwk\Ouro\Transport\Message\NewEvent;
-use Mhwk\Ouro\Transport\Message\OperationResult;
-use Mhwk\Ouro\Transport\Message\WriteEvents;
-use Mhwk\Ouro\Transport\Message\WriteEventsCompleted;
+use Spray\Ouro\Transport\Message\NewEvent;
+use Spray\Ouro\Transport\Message\OperationResult;
+use Spray\Ouro\Transport\Message\WriteEvents;
+use Spray\Ouro\Transport\Message\WriteEventsCompleted;
 
 final class WriteEventsHandler extends HttpHandler
 {

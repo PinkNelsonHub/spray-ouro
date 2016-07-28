@@ -1,11 +1,11 @@
 <?php
 
-namespace Mhwk\Ouro\Transport\Http\Handler;
+namespace Spray\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
 use Generator;
 use GuzzleHttp\Psr7\Request;
-use Mhwk\Ouro\Transport\Message\PersistentSubscriptionNakEvents;
+use Spray\Ouro\Transport\Message\PersistentSubscriptionNakEvents;
 
 final class PersistentSubscriptionNakEventsHandler extends HttpEntriesHandler
 {

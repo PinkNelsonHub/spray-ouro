@@ -1,6 +1,6 @@
 <?php
 
-namespace Mhwk\Ouro\Transport;
+namespace Spray\Ouro\Transport;
 
 interface IHandleMessage
 {

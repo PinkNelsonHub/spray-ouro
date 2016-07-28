@@ -1,14 +1,14 @@
 <?php
 
-namespace Mhwk\Ouro\Transport\Http\Handler;
+namespace Spray\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
 use Assert\AssertionFailedException;
 use GuzzleHttp\Psr7\Request;
 use Icicle\Awaitable;
 use Icicle\Observable\Emitter;
-use Mhwk\Ouro\Transport\Message\ConnectToPersistentSubscription;
-use Mhwk\Ouro\Transport\Message\PersistentSubsciptionStreamEventAppeared;
+use Spray\Ouro\Transport\Message\ConnectToPersistentSubscription;
+use Spray\Ouro\Transport\Message\PersistentSubsciptionStreamEventAppeared;
 
 final class ConnectToPersistentSubscriptionHandler extends HttpEntriesHandler
 {

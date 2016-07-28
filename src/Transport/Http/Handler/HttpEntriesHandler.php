@@ -1,13 +1,13 @@
 <?php
 
-namespace Mhwk\Ouro\Transport\Http\Handler;
+namespace Spray\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
 use Assert\AssertionFailedException;
 use DateTimeImmutable;
 use Illuminate\Support\Facades\Log;
-use Mhwk\Ouro\Transport\Message\EventRecord;
-use Mhwk\Ouro\Transport\Message\ResolvedIndexedEvent;
+use Spray\Ouro\Transport\Message\EventRecord;
+use Spray\Ouro\Transport\Message\ResolvedIndexedEvent;
 
 abstract class HttpEntriesHandler extends HttpHandler
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Mhwk\Ouro\Exception;
+namespace Spray\Ouro\Exception;
 
 final class EventNotExecutedException extends RuntimeException
 {

@@ -1,12 +1,12 @@
 <?php
 
-namespace Mhwk\Ouro\Transport\Http\Handler;
+namespace Spray\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
 use GuzzleHttp\Psr7\Request;
-use Mhwk\Ouro\Transport\Message\UpdatePersistentSubscription;
-use Mhwk\Ouro\Transport\Message\UpdatePersistentSubscriptionCompleted;
-use Mhwk\Ouro\Transport\Message\UpdatePersistentSubscriptionResult;
+use Spray\Ouro\Transport\Message\UpdatePersistentSubscription;
+use Spray\Ouro\Transport\Message\UpdatePersistentSubscriptionCompleted;
+use Spray\Ouro\Transport\Message\UpdatePersistentSubscriptionResult;
 
 final class UpdatePersistentSubscriptionHandler extends HttpHandler
 {

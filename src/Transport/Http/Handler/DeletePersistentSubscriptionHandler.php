@@ -1,12 +1,12 @@
 <?php
 
-namespace Mhwk\Ouro\Transport\Http\Handler;
+namespace Spray\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
 use GuzzleHttp\Psr7\Request;
-use Mhwk\Ouro\Transport\Message\DeletePersistentSubscription;
-use Mhwk\Ouro\Transport\Message\DeletePersistentSubscriptionCompleted;
-use Mhwk\Ouro\Transport\Message\DeletePersistentSubscriptionResult;
+use Spray\Ouro\Transport\Message\DeletePersistentSubscription;
+use Spray\Ouro\Transport\Message\DeletePersistentSubscriptionCompleted;
+use Spray\Ouro\Transport\Message\DeletePersistentSubscriptionResult;
 
 final class DeletePersistentSubscriptionHandler extends HttpHandler
 {

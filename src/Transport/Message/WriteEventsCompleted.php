@@ -1,6 +1,6 @@
 <?php
 
-namespace Mhwk\Ouro\Transport\Message;
+namespace Spray\Ouro\Transport\Message;
 
 final class WriteEventsCompleted
 {

@@ -1,6 +1,6 @@
 {
-  "name": "mhwk/ouro",
-  "description": "EventStore client",
+  "name": "mhwk/spray-ouro",
+  "description": "EventStore client for PHP",
   "require": {
     "php": ">=7.0",
     "guzzlehttp/guzzle": "~6.0",
@@ -16,7 +16,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Mhwk\\Ouro\\": "./src/"
+      "Spray\\Ouro\\": "./src/"
     }
   },
   "autoload-dev": {

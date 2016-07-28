@@ -1,25 +1,25 @@
 <?php
 
-namespace Mhwk\Ouro\Client;
+namespace Spray\Ouro\Client;
 
 use Generator;
 use Icicle\Observable\Observable;
-use Mhwk\Ouro\Exception\EventNotExecutedException;
-use Mhwk\Ouro\Exception\EventNotSupportedException;
-use Mhwk\Ouro\Transport\Message\ConnectToPersistentSubscription;
-use Mhwk\Ouro\Transport\Message\CreatePersistentSubscription;
-use Mhwk\Ouro\Transport\Message\DeletePersistentSubscription;
-use Mhwk\Ouro\Transport\Message\NakAction;
-use Mhwk\Ouro\Transport\Message\NewEvent;
-use Mhwk\Ouro\Transport\Message\PersistentSubscriptionAckEvents;
-use Mhwk\Ouro\Transport\Message\PersistentSubscriptionNakEvents;
-use Mhwk\Ouro\Transport\Message\ReadStreamEventsComplete;
-use Mhwk\Ouro\Transport\Message\ReadStreamEventsForward;
-use Mhwk\Ouro\Transport\Message\ResolvedIndexedEvent;
-use Mhwk\Ouro\Transport\Message\UpdatePersistentSubscription;
-use Mhwk\Ouro\Transport\Message\WriteEvents;
-use Mhwk\Ouro\Transport\Http\HttpTransport;
-use Mhwk\Ouro\Transport\IHandleMessage;
+use Spray\Ouro\Exception\EventNotExecutedException;
+use Spray\Ouro\Exception\EventNotSupportedException;
+use Spray\Ouro\Transport\Message\ConnectToPersistentSubscription;
+use Spray\Ouro\Transport\Message\CreatePersistentSubscription;
+use Spray\Ouro\Transport\Message\DeletePersistentSubscription;
+use Spray\Ouro\Transport\Message\NakAction;
+use Spray\Ouro\Transport\Message\NewEvent;
+use Spray\Ouro\Transport\Message\PersistentSubscriptionAckEvents;
+use Spray\Ouro\Transport\Message\PersistentSubscriptionNakEvents;
+use Spray\Ouro\Transport\Message\ReadStreamEventsComplete;
+use Spray\Ouro\Transport\Message\ReadStreamEventsForward;
+use Spray\Ouro\Transport\Message\ResolvedIndexedEvent;
+use Spray\Ouro\Transport\Message\UpdatePersistentSubscription;
+use Spray\Ouro\Transport\Message\WriteEvents;
+use Spray\Ouro\Transport\Http\HttpTransport;
+use Spray\Ouro\Transport\IHandleMessage;
 use Throwable;
 use Icicle\Coroutine;
 

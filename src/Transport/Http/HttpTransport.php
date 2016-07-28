@@ -1,28 +1,28 @@
 <?php
 
-namespace Mhwk\Ouro\Transport\Http;
+namespace Spray\Ouro\Transport\Http;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
-use Mhwk\Ouro\Transport\Http\Handler\CreatePersistentSubscriptionHandler;
-use Mhwk\Ouro\Transport\Http\Handler\DeletePersistentSubscriptionHandler;
-use Mhwk\Ouro\Transport\Http\Handler\UpdatePersistentSubscriptionHandler;
-use Mhwk\Ouro\Transport\Message\CreatePersistentSubscription;
-use Mhwk\Ouro\Transport\Message\DeletePersistentSubscription;
-use Mhwk\Ouro\Transport\Message\PersistentSubscriptionAckEvents;
-use Mhwk\Ouro\Transport\Message\PersistentSubscriptionNakEvents;
-use Mhwk\Ouro\Transport\Http\Handler\ConnectToPersistentSubscriptionHandler;
-use Mhwk\Ouro\Transport\Message\ConnectToPersistentSubscription;
-use Mhwk\Ouro\Transport\Message\ReadStreamEventsForward;
-use Mhwk\Ouro\Transport\Message\UpdatePersistentSubscription;
-use Mhwk\Ouro\Transport\Message\WriteEvents;
-use Mhwk\Ouro\Exception\RuntimeException;
-use Mhwk\Ouro\Transport\Http\Handler\PersistentSubscriptionAckEventsHandler;
-use Mhwk\Ouro\Transport\Http\Handler\PersistentSubscriptionNakEventsHandler;
-use Mhwk\Ouro\Transport\Http\Handler\ReadStreamEventsForwardHandler;
-use Mhwk\Ouro\Transport\Http\Handler\WriteEventsHandler;
-use Mhwk\Ouro\Transport\IHandleMessage;
-use Mhwk\Ouro\Transport\Message\UserCredentials;
+use Spray\Ouro\Transport\Http\Handler\CreatePersistentSubscriptionHandler;
+use Spray\Ouro\Transport\Http\Handler\DeletePersistentSubscriptionHandler;
+use Spray\Ouro\Transport\Http\Handler\UpdatePersistentSubscriptionHandler;
+use Spray\Ouro\Transport\Message\CreatePersistentSubscription;
+use Spray\Ouro\Transport\Message\DeletePersistentSubscription;
+use Spray\Ouro\Transport\Message\PersistentSubscriptionAckEvents;
+use Spray\Ouro\Transport\Message\PersistentSubscriptionNakEvents;
+use Spray\Ouro\Transport\Http\Handler\ConnectToPersistentSubscriptionHandler;
+use Spray\Ouro\Transport\Message\ConnectToPersistentSubscription;
+use Spray\Ouro\Transport\Message\ReadStreamEventsForward;
+use Spray\Ouro\Transport\Message\UpdatePersistentSubscription;
+use Spray\Ouro\Transport\Message\WriteEvents;
+use Spray\Ouro\Exception\RuntimeException;
+use Spray\Ouro\Transport\Http\Handler\PersistentSubscriptionAckEventsHandler;
+use Spray\Ouro\Transport\Http\Handler\PersistentSubscriptionNakEventsHandler;
+use Spray\Ouro\Transport\Http\Handler\ReadStreamEventsForwardHandler;
+use Spray\Ouro\Transport\Http\Handler\WriteEventsHandler;
+use Spray\Ouro\Transport\IHandleMessage;
+use Spray\Ouro\Transport\Message\UserCredentials;
 
 final class HttpTransport implements IHandleMessage
 {

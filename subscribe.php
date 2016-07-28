@@ -2,9 +2,9 @@
 
 use Icicle\Coroutine;
 use Icicle\Loop;
-use Mhwk\Ouro\Client\Connection;
-use Mhwk\Ouro\Client\IConnectToPersistentSubscriptionAsync;
-use Mhwk\Ouro\Transport\Message\EventRecord;
+use Spray\Ouro\Client\Connection;
+use Spray\Ouro\Client\IConnectToPersistentSubscriptionAsync;
+use Spray\Ouro\Transport\Message\EventRecord;
 
 error_reporting(-1);
 ini_set('display_errors', 1);

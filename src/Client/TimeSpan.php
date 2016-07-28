@@ -1,6 +1,6 @@
 <?php
 
-namespace Mhwk\Ouro\Client;
+namespace Spray\Ouro\Client;
 
 final class TimeSpan
 {

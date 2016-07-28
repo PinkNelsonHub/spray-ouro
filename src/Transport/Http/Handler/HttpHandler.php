@@ -1,6 +1,6 @@
 <?php
 
-namespace Mhwk\Ouro\Transport\Http\Handler;
+namespace Spray\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
 use Generator;
@@ -8,8 +8,8 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Mhwk\Ouro\Transport\IHandleMessage;
-use Mhwk\Ouro\Transport\Message\UserCredentials;
+use Spray\Ouro\Transport\IHandleMessage;
+use Spray\Ouro\Transport\Message\UserCredentials;
 
 abstract class HttpHandler implements IHandleMessage
 {
