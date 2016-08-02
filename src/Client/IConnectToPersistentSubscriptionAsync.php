@@ -20,7 +20,8 @@ interface IConnectToPersistentSubscriptionAsync
         string $subscriptionId,
         string $streamId,
         int $allowedInFlightMessages,
-        callable $onEventAppeared): Coroutine;
+        callable $onEventAppeared,
+        bool $autoAck = true): Coroutine;
 
     /**
      * @param string $groupName
