@@ -4,8 +4,9 @@ namespace Spray\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
 use Generator;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
-use Icicle\Coroutine\Coroutine;
+use Icicle\Awaitable;
 use Spray\Ouro\Transport\Message\ReadStreamEventsComplete;
 use Spray\Ouro\Transport\Message\ReadStreamEventsForward;
 use Spray\Ouro\Transport\Message\ReadStreamResult;
@@ -33,26 +34,34 @@ final class ReadStreamEventsForwardHandler extends HttpEntriesHandler
      */
     function request($command)
     {
-        $response = yield from $this->send(new Request(
-            'GET',
-            sprintf(
-                '/streams/%s/%s/forward/%s?embed=body',
-                $command->getStream(),
-                $command->getStart(),
-                $command->getCount()
-            ),
-            [
-                'Accept' => 'application/vnd.eventstore.atom+json'
-            ]
-        ));
+        try {
+            $response = yield from $this->send(new Request(
+                'GET',
+                sprintf(
+                    '/streams/%s/%s/forward/%s?embed=body',
+                    $command->getStream(),
+                    $command->getStart(),
+                    $command->getCount()
+                ),
+                [
+                    'Accept' => 'application/vnd.eventstore.atom+json'
+                ]
+            ));
 
-        $data = json_decode($response->getBody()->getContents(), true);
+            $data = json_decode($response->getBody()->getContents(), true);
 
-        return new ReadStreamEventsComplete(
-            $this->buildEvents($data['entries']),
-            new ReadStreamResult(0),
-            $data['headOfStream'],
-            ''
-        );
+            return new ReadStreamEventsComplete(
+                $this->buildEvents($data['entries']),
+                new ReadStreamResult(0),
+                $data['headOfStream'],
+                ''
+            );
+        } catch (RequestException $error) {
+            if (404 === $error->getResponse()->getStatusCode()) {
+                yield Awaitable\resolve()->delay(.5);
+            } else {
+                throw $error;
+            }
+        }
     }
 }

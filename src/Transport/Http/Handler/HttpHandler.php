@@ -8,6 +8,7 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use Throwable;
 use Spray\Ouro\Transport\IHandleMessage;
 use Spray\Ouro\Transport\Message\UserCredentials;
 
@@ -51,15 +52,10 @@ abstract class HttpHandler implements IHandleMessage
      */
     protected function send(Request $request): Generator
     {
-        try {
-            $response = yield $this->client->send($request, [
-                'auth' => [$this->credentials->getUsername(), $this->credentials->getPassword()]
-            ]);
-            return $response;
-        } catch (RequestException $error) {
-            $this->assertResponse($error->getResponse());
-            return $error->getResponse();
-        }
+        $response = yield $this->client->send($request, [
+            'auth' => [$this->credentials->getUsername(), $this->credentials->getPassword()]
+        ]);
+        return $response;
     }
 
     /**

@@ -4,6 +4,7 @@ namespace Spray\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
 use Assert\AssertionFailedException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Icicle\Awaitable;
 use Icicle\Observable\Emitter;
@@ -37,34 +38,42 @@ final class ConnectToPersistentSubscriptionHandler extends HttpEntriesHandler
     {
         return new Emitter(function(callable $emit) use ($command) {
             while ($this->running) {
-                $response = yield from $this->send(new Request(
-                    'GET',
-                    sprintf(
-                        '/subscriptions/%s/%s/%s?embed=body',
-                        $command->getEventStreamId(),
-                        $command->getSubscriptionId(),
-                        $command->getAllowedInFlightMessages()
-                    ),
-                    [
-                        'Accept' => 'application/vnd.eventstore.competingatom+json'
-                    ]
-                ));
+                try {
+                    $response = yield from $this->send(new Request(
+                        'GET',
+                        sprintf(
+                            '/subscriptions/%s/%s/%s?embed=body',
+                            $command->getEventStreamId(),
+                            $command->getSubscriptionId(),
+                            $command->getAllowedInFlightMessages()
+                        ),
+                        [
+                            'Accept' => 'application/vnd.eventstore.competingatom+json'
+                        ]
+                    ));
 
-                $data = json_decode($response->getBody()->getContents(), true);
+                    $data = json_decode($response->getBody()->getContents(), true);
 
-                if (count($data['entries'])) {
-                    foreach (array_reverse($data['entries']) as $entry) {
-                        try {
-                            $this->assertEvent($entry);
-                            yield $emit(new PersistentSubsciptionStreamEventAppeared(
-                                $this->buildEvent($entry)
-                            ));
-                        } catch (AssertionFailedException $e) {
-                            continue;
+                    if (count($data['entries'])) {
+                        foreach (array_reverse($data['entries']) as $entry) {
+                            try {
+                                $this->assertEvent($entry);
+                                yield $emit(new PersistentSubsciptionStreamEventAppeared(
+                                    $this->buildEvent($entry)
+                                ));
+                            } catch (AssertionFailedException $e) {
+                                continue;
+                            }
                         }
+                    } else {
+                        yield Awaitable\resolve()->delay(.5);
                     }
-                } else {
-                    yield Awaitable\resolve()->delay(.5);
+                } catch (RequestException $error) {
+                    if (404 === $error->getResponse()->getStatusCode()) {
+                        yield Awaitable\resolve()->delay(.5);
+                    } else {
+                        throw $error;
+                    }
                 }
             }
         });
