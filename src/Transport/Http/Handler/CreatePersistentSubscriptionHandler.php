@@ -3,6 +3,7 @@
 namespace Spray\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Spray\Ouro\Transport\Message\CreatePersistentSubscription;
@@ -33,33 +34,36 @@ final class CreatePersistentSubscriptionHandler extends HttpHandler
      */
     function request($command)
     {
-        $response = yield $this->send(new Request(
-            'PUT',
-            sprintf(
-                '/subscriptions/%s/%s',
-                $command->getEventStreamId(),
-                $command->getSubscriptionGroupName()
-            ),
-            [
-                'Content-Type' => 'application/json'
-            ],
-            json_encode([
-                'resolveLinktos' => $command->isResolveLinkTos(),
-                'startFrom' => $command->getStartFrom(),
-                'extraStatistics' => $command->isRecordStatistics(),
-                'checkPointAfterMilliseconds' => $command->getCheckPointAfterTime(),
-                'liveBufferSize' => $command->getLiveBufferSize(),
-                'readBatchSize' => $command->getReadBatchSize(),
-                'bufferSize' => $command->getBufferSize(),
-                'maxCheckPointCount' => $command->getCheckPointMaxCount(),
-                'maxRetryCount' => $command->getMaxRetryCount(),
-                'maxSubscriberCount' => $command->getSubscriberMaxCount(),
-                'messageTimeoutMilliseconds' => $command->getMessageTimeoutMilliseconds(),
-                'minCheckPointCount' => $command->getCheckPointMinCount(),
-                'namedConsumerStrategy' => $command->getNamedConsumerStrategy()
-            ])
-        ));
-
+        try {
+            $response = yield $this->send(new Request(
+                'PUT',
+                sprintf(
+                    '/subscriptions/%s/%s',
+                    $command->getEventStreamId(),
+                    $command->getSubscriptionGroupName()
+                ),
+                [
+                    'Content-Type' => 'application/json'
+                ],
+                json_encode([
+                    'resolveLinktos' => $command->isResolveLinkTos(),
+                    'startFrom' => $command->getStartFrom(),
+                    'extraStatistics' => $command->isRecordStatistics(),
+                    'checkPointAfterMilliseconds' => $command->getCheckPointAfterTime(),
+                    'liveBufferSize' => $command->getLiveBufferSize(),
+                    'readBatchSize' => $command->getReadBatchSize(),
+                    'bufferSize' => $command->getBufferSize(),
+                    'maxCheckPointCount' => $command->getCheckPointMaxCount(),
+                    'maxRetryCount' => $command->getMaxRetryCount(),
+                    'maxSubscriberCount' => $command->getSubscriberMaxCount(),
+                    'messageTimeoutMilliseconds' => $command->getMessageTimeoutMilliseconds(),
+                    'minCheckPointCount' => $command->getCheckPointMinCount(),
+                    'namedConsumerStrategy' => $command->getNamedConsumerStrategy()
+                ])
+            ));
+        } catch (RequestException $error) {
+            $this->assertResponse($error->getResponse());
+        }
         return new CreatePersistentSubscriptionCompleted(CreatePersistentSubscriptionResult::success(), '');
     }
 

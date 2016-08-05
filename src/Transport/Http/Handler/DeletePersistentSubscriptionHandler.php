@@ -3,6 +3,7 @@
 namespace Spray\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Spray\Ouro\Transport\Message\DeletePersistentSubscription;
 use Spray\Ouro\Transport\Message\DeletePersistentSubscriptionCompleted;
