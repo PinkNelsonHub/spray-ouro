@@ -4,6 +4,8 @@ namespace Spray\Ouro\Client;
 
 use Generator;
 use Icicle\Observable\Observable;
+use Illuminate\Support\Facades\Log;
+use Spray\Ouro\Exception\ConcurrencyException;
 use Spray\Ouro\Exception\EventNotExecutedException;
 use Spray\Ouro\Exception\EventNotSupportedException;
 use Spray\Ouro\Transport\Message\ConnectToPersistentSubscription;
@@ -309,14 +311,16 @@ final class Connection
         string $subscriptionId,
         string $streamId,
         int $allowedInFlightMessages,
-        callable $onEventAppeared): Coroutine\Coroutine
+        callable $onEventAppeared,
+        bool $autoAck = true): Coroutine\Coroutine
     {
         return Coroutine\create(
             [$this, 'subscribePersistent'],
             $subscriptionId,
             $streamId,
             $allowedInFlightMessages,
-            $onEventAppeared
+            $onEventAppeared,
+            $autoAck
         );
     }
 
@@ -332,7 +336,8 @@ final class Connection
         string $subscriptionId,
         string $streamId,
         int $allowedInFlightMessages,
-        callable $onEventAppeared): Generator
+        callable $onEventAppeared,
+        bool $autoAck = true): Generator
     {
         /** @var Observable $observable */
         $observable = $this->transport->handle(new ConnectToPersistentSubscription(
@@ -345,11 +350,14 @@ final class Connection
         while (yield $iterator->isValid()) {
             try {
                 yield $onEventAppeared($iterator->getCurrent()->getEvent()->getEvent());
-                yield $this->acknowledgeAsync(
-                    $subscriptionId,
-                    $streamId,
-                    [$iterator->getCurrent()->getEvent()->getEvent()->getEventId()]
-                );
+
+                if ($autoAck) {
+                    yield $this->acknowledgeAsync(
+                        $subscriptionId,
+                        $streamId,
+                        [$iterator->getCurrent()->getEvent()->getEvent()->getEventId()]
+                    );
+                }
             } catch (EventNotSupportedException $error) {
                 yield $this->failAsync(
                     $subscriptionId,
@@ -358,7 +366,7 @@ final class Connection
                     $error->getMessage(),
                     NakAction::SKIP
                 );
-            } catch (EventNotExecutedException $error) {
+            } catch (ConcurrencyException $error) {
                 yield $this->failAsync(
                     $subscriptionId,
                     $streamId,
@@ -366,13 +374,21 @@ final class Connection
                     $error->getMessage(),
                     NakAction::RETRY
                 );
-            } catch (Throwable $error) {
+            } catch (EventNotExecutedException $error) {
                 yield $this->failAsync(
                     $subscriptionId,
                     $streamId,
                     [$iterator->getCurrent()->getEvent()->getEvent()->getEventId()],
                     $error->getMessage(),
                     NakAction::PARK
+                );
+            } catch (Throwable $error) {
+                yield $this->failAsync(
+                    $subscriptionId,
+                    $streamId,
+                    [$iterator->getCurrent()->getEvent()->getEvent()->getEventId()],
+                    $error->getMessage(),
+                    NakAction::STOP
                 );
                 throw $error;
             }

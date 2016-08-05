@@ -20,7 +20,8 @@ interface IConnectToPersistentSubscription
         string $subscriptionId,
         string $streamId,
         int $allowedInFlightMessages,
-        callable $onEventAppeared): Generator;
+        callable $onEventAppeared,
+        bool $autoAck = true): Generator;
 
     /**
      * @param string $groupName
