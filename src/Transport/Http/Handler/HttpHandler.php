@@ -8,6 +8,7 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use Spray\Ouro\Exception\EventStoreUnreachableException;
 use Throwable;
 use Spray\Ouro\Transport\IHandleMessage;
 use Spray\Ouro\Transport\Message\UserCredentials;
@@ -52,22 +53,23 @@ abstract class HttpHandler implements IHandleMessage
      */
     protected function send(Request $request): Generator
     {
-        $response = yield $this->client->send($request, [
-            'auth' => [$this->credentials->getUsername(), $this->credentials->getPassword()]
-        ]);
-        return $response;
-    }
-
-    /**
-     * @param Response $response
-     */
-    protected function assertResponse(Response $response)
-    {
-        Assertion::inArray(
-            $response->getStatusCode(),
-            [200, 201, 202],
-            sprintf('Failed request [%s]: %s', $response->getStatusCode(), $response->getReasonPhrase())
-        );
+        try {
+            return yield $this->client->send($request, [
+                'auth' => [$this->credentials->getUsername(), $this->credentials->getPassword()]
+            ]);
+        } catch (RequestException $error) {
+            if (null === $error->getResponse()) {
+                throw new EventStoreUnreachableException(
+                    sprintf(
+                        'Could not get any response from event store: %s',
+                        $error->getMessage()
+                    ),
+                    $error->getCode(),
+                    $error
+                );
+            }
+            throw $error;
+        }
     }
 
     /**

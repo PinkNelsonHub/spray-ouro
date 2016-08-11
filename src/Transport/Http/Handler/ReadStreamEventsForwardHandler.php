@@ -59,16 +59,6 @@ final class ReadStreamEventsForwardHandler extends HttpEntriesHandler
                 ''
             );
         } catch (RequestException $error) {
-            if (null === $error->getResponse()) {
-                throw new EventStoreUnreachableException(
-                    sprintf(
-                        'Event store is unreachable: %s',
-                        $error->getMessage()
-                    ),
-                    $error->getCode(),
-                    $error
-                );
-            }
             if (404 === $error->getResponse()->getStatusCode()) {
                 throw new NonExistentStreamException(
                     sprintf(
