@@ -8,6 +8,9 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Icicle\Awaitable;
 use Icicle\Observable\Emitter;
+use Spray\Ouro\Exception\EventStoreUnreachableException;
+use Spray\Ouro\Exception\NonExistentStreamException;
+use Spray\Ouro\Exception\NonExistentSubscriptionException;
 use Spray\Ouro\Transport\Message\ConnectToPersistentSubscription;
 use Spray\Ouro\Transport\Message\PersistentSubsciptionStreamEventAppeared;
 
@@ -69,11 +72,29 @@ final class ConnectToPersistentSubscriptionHandler extends HttpEntriesHandler
                         yield Awaitable\resolve()->delay(.5);
                     }
                 } catch (RequestException $error) {
-                    if (404 === $error->getResponse()->getStatusCode()) {
-                        yield Awaitable\resolve()->delay(.5);
-                    } else {
-                        throw $error;
+                    if (null === $error->getResponse()) {
+                        throw new EventStoreUnreachableException(
+                            sprintf(
+                                'Event store is unreachable: %s',
+                                $error->getMessage()
+                            ),
+                            $error->getCode(),
+                            $error
+                        );
                     }
+                    if (404 === $error->getResponse()->getStatusCode()) {
+                        throw new NonExistentSubscriptionException(
+                            sprintf(
+                                'Subscription %s-%s does not exist: %s',
+                                $command->getEventStreamId(),
+                                $command->getSubscriptionId(),
+                                $error->getMessage()
+                            ),
+                            $error->getCode(),
+                            $error
+                        );
+                    }
+                    throw $error;
                 }
             }
         });

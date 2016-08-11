@@ -43,7 +43,7 @@ final class ReadStreamEventsForward
     /**
      * @return string
      */
-    public function getStream()
+    public function getEventStreamId()
     {
         return $this->stream;
     }

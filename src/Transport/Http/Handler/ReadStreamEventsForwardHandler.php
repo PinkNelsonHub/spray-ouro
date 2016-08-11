@@ -7,6 +7,8 @@ use Generator;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Icicle\Awaitable;
+use Spray\Ouro\Exception\EventStoreUnreachableException;
+use Spray\Ouro\Exception\NonExistentStreamException;
 use Spray\Ouro\Transport\Message\ReadStreamEventsComplete;
 use Spray\Ouro\Transport\Message\ReadStreamEventsForward;
 use Spray\Ouro\Transport\Message\ReadStreamResult;
@@ -39,7 +41,7 @@ final class ReadStreamEventsForwardHandler extends HttpEntriesHandler
                 'GET',
                 sprintf(
                     '/streams/%s/%s/forward/%s?embed=body',
-                    $command->getStream(),
+                    $command->getEventStreamId(),
                     $command->getStart(),
                     $command->getCount()
                 ),
@@ -57,11 +59,28 @@ final class ReadStreamEventsForwardHandler extends HttpEntriesHandler
                 ''
             );
         } catch (RequestException $error) {
-            if (404 === $error->getResponse()->getStatusCode()) {
-                yield Awaitable\resolve()->delay(.5);
-            } else {
-                throw $error;
+            if (null === $error->getResponse()) {
+                throw new EventStoreUnreachableException(
+                    sprintf(
+                        'Event store is unreachable: %s',
+                        $error->getMessage()
+                    ),
+                    $error->getCode(),
+                    $error
+                );
             }
+            if (404 === $error->getResponse()->getStatusCode()) {
+                throw new NonExistentStreamException(
+                    sprintf(
+                        'Stream %s does not exist: %s',
+                        $command->getEventStreamId(),
+                        $error->getMessage()
+                    ),
+                    $error->getCode(),
+                    $error
+                );
+            }
+            throw $error;
         }
     }
 }

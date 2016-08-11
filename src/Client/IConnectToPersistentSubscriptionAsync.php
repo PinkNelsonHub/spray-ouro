@@ -21,6 +21,7 @@ interface IConnectToPersistentSubscriptionAsync
         string $streamId,
         int $allowedInFlightMessages,
         callable $onEventAppeared,
+        callable $onSubscriptionDropped,
         bool $autoAck = true): Coroutine;
 
     /**

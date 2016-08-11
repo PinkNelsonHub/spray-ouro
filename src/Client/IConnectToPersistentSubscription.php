@@ -21,6 +21,7 @@ interface IConnectToPersistentSubscription
         string $streamId,
         int $allowedInFlightMessages,
         callable $onEventAppeared,
+        callable $onSubscriptionDropped,
         bool $autoAck = true): Generator;
 
     /**

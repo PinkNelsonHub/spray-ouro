@@ -6,6 +6,7 @@ use Assert\Assertion;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use Spray\Ouro\Exception\EventStoreUnreachableException;
 use Spray\Ouro\Transport\Message\CreatePersistentSubscription;
 use Spray\Ouro\Transport\Message\CreatePersistentSubscriptionCompleted;
 use Spray\Ouro\Transport\Message\CreatePersistentSubscriptionResult;
@@ -62,6 +63,13 @@ final class CreatePersistentSubscriptionHandler extends HttpHandler
                 ])
             ));
         } catch (RequestException $error) {
+            if (null === $error->getResponse()) {
+                throw new EventStoreUnreachableException(
+                    sprintf('EventStore is unreachable: %s', $error->getMessage()),
+                    $error->getCode(),
+                    $error
+                );
+            }
             $this->assertResponse($error->getResponse());
         }
         return new CreatePersistentSubscriptionCompleted(CreatePersistentSubscriptionResult::success(), '');

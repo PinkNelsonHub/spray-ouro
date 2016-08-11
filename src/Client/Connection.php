@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Spray\Ouro\Exception\ConcurrencyException;
 use Spray\Ouro\Exception\EventNotExecutedException;
 use Spray\Ouro\Exception\EventNotSupportedException;
+use Spray\Ouro\Exception\Exception;
 use Spray\Ouro\Transport\Message\ConnectToPersistentSubscription;
 use Spray\Ouro\Transport\Message\CreatePersistentSubscription;
 use Spray\Ouro\Transport\Message\DeletePersistentSubscription;
@@ -312,6 +313,7 @@ final class Connection
         string $streamId,
         int $allowedInFlightMessages,
         callable $onEventAppeared,
+        callable $onSubscriptionDropped,
         bool $autoAck = true): Coroutine\Coroutine
     {
         return Coroutine\create(
@@ -320,6 +322,7 @@ final class Connection
             $streamId,
             $allowedInFlightMessages,
             $onEventAppeared,
+            $onSubscriptionDropped,
             $autoAck
         );
     }
@@ -337,14 +340,22 @@ final class Connection
         string $streamId,
         int $allowedInFlightMessages,
         callable $onEventAppeared,
+        callable $onSubscriptionDropped,
         bool $autoAck = true): Generator
     {
-        /** @var Observable $observable */
-        $observable = $this->transport->handle(new ConnectToPersistentSubscription(
-            $subscriptionId,
-            $streamId,
-            $allowedInFlightMessages
-        ));
+        while (true) {
+            try {
+                /** @var Observable $observable */
+                $observable = $this->transport->handle(new ConnectToPersistentSubscription(
+                    $subscriptionId,
+                    $streamId,
+                    $allowedInFlightMessages
+                ));
+                break;
+            } catch (Exception $error) {
+                yield $onSubscriptionDropped($error);
+            }
+        }
 
         $iterator = $observable->getIterator();
         while (yield $iterator->isValid()) {
