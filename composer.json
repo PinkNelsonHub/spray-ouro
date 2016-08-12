@@ -1,6 +1,8 @@
 {
   "name": "mhwk/spray-ouro",
   "description": "EventStore client for PHP",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "require": {
     "php": ">=7.0",
     "guzzlehttp/guzzle": "~6.0",
@@ -9,7 +11,8 @@
     "krakjoe/pthreads-polyfill": "~1.1",
     "icicleio/icicle": "dev-master",
     "icicleio/stream": "dev-master",
-    "icicleio/concurrent": "dev-master"
+    "icicleio/concurrent": "dev-master",
+    "icicleio/http": "dev-master"
   },
   "require-dev": {
     "phpunit/phpunit": "~5.4"
