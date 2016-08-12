@@ -4,11 +4,8 @@ namespace Spray\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
 use Generator;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\Request;
-use Icicle\Awaitable;
-use Spray\Ouro\Exception\EventStoreUnreachableException;
-use Spray\Ouro\Exception\NonExistentStreamException;
+use Spray\Ouro\Transport\Http\HttpRequest;
+use Spray\Ouro\Transport\Http\HttpResponse;
 use Spray\Ouro\Transport\Message\ReadStreamEventsComplete;
 use Spray\Ouro\Transport\Message\ReadStreamEventsForward;
 use Spray\Ouro\Transport\Message\ReadStreamResult;
@@ -36,41 +33,23 @@ final class ReadStreamEventsForwardHandler extends HttpEntriesHandler
      */
     function request($command)
     {
-        try {
-            $response = yield from $this->send(new Request(
-                'GET',
-                sprintf(
-                    '/streams/%s/%s/forward/%s?embed=body',
-                    $command->getEventStreamId(),
-                    $command->getStart(),
-                    $command->getCount()
-                ),
-                [
-                    'Accept' => 'application/vnd.eventstore.atom+json'
-                ]
-            ));
+        /** @var HttpResponse $response */
+        $response = yield from $this->send(HttpRequest::get(sprintf(
+                '/streams/%s/%s/forward/%s',
+                $command->getEventStreamId(),
+                $command->getStart(),
+                $command->getCount()
+            ))
+            ->withQuery('embed', 'body')
+            ->withAccept('application/vnd.eventstore.atom+json'));
 
-            $data = json_decode($response->getBody()->getContents(), true);
+        $data = json_decode($response->getBody(), true);
 
-            return new ReadStreamEventsComplete(
-                $this->buildEvents($data['entries']),
-                new ReadStreamResult(0),
-                $data['headOfStream'],
-                ''
-            );
-        } catch (RequestException $error) {
-            if (404 === $error->getResponse()->getStatusCode()) {
-                throw new NonExistentStreamException(
-                    sprintf(
-                        'Stream %s does not exist: %s',
-                        $command->getEventStreamId(),
-                        $error->getMessage()
-                    ),
-                    $error->getCode(),
-                    $error
-                );
-            }
-            throw $error;
-        }
+        return new ReadStreamEventsComplete(
+            $this->buildEvents($data['entries']),
+            new ReadStreamResult(0),
+            $data['headOfStream'],
+            ''
+        );
     }
 }

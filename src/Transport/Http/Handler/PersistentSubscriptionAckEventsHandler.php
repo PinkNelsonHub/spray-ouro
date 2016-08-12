@@ -4,8 +4,7 @@ namespace Spray\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
 use Generator;
-use GuzzleHttp\Psr7\Request;
-use Icicle\Awaitable;
+use Spray\Ouro\Transport\Http\HttpRequest;
 use Spray\Ouro\Transport\Message\PersistentSubscriptionAckEvents;
 
 final class PersistentSubscriptionAckEventsHandler extends HttpEntriesHandler
@@ -32,8 +31,7 @@ final class PersistentSubscriptionAckEventsHandler extends HttpEntriesHandler
     function request($command)
     {
         foreach ($command->getProcessedEventIds() as $processedEventId) {
-            $response = yield from $this->send(new Request(
-                'POST',
+            $response = yield from $this->send(HttpRequest::post(
                 sprintf(
                     '/subscriptions/%s/%s/ack/%s',
                     $command->getEventStreamId(),

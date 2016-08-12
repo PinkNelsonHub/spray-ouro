@@ -27,9 +27,9 @@ use Spray\Ouro\Transport\Message\UserCredentials;
 final class HttpTransport implements IHandleMessage
 {
     /**
-     * @var ClientInterface
+     * @var HttpConfiguration
      */
-    private $client;
+    private $configuration;
 
     /**
      * @var UserCredentials
@@ -37,26 +37,26 @@ final class HttpTransport implements IHandleMessage
     private $credentials;
 
     /**
-     * @var IHandleMessage
+     * @var IHandleMessage[]
      */
     private $handlers;
 
     /**
-     * @param ClientInterface $client
+     * @param HttpConfiguration $configuration
      * @param UserCredentials $credentials
      */
-    function __construct(ClientInterface $client, UserCredentials $credentials)
+    function __construct(HttpConfiguration $configuration, UserCredentials $credentials)
     {
-        $this->client = $client;
+        $this->configuration = $configuration;
         $this->credentials = $credentials;
-        $this->handlers[ReadStreamEventsForward::class] = new ReadStreamEventsForwardHandler($this->client, $this->credentials);
-        $this->handlers[WriteEvents::class] = new WriteEventsHandler($this->client, $this->credentials);
-        $this->handlers[CreatePersistentSubscription::class] = new CreatePersistentSubscriptionHandler($this->client, $this->credentials);
-        $this->handlers[UpdatePersistentSubscription::class] = new UpdatePersistentSubscriptionHandler($this->client, $this->credentials);
-        $this->handlers[DeletePersistentSubscription::class] = new DeletePersistentSubscriptionHandler($this->client, $this->credentials);
-        $this->handlers[ConnectToPersistentSubscription::class] = new ConnectToPersistentSubscriptionHandler($this->client, $this->credentials);
-        $this->handlers[PersistentSubscriptionAckEvents::class] = new PersistentSubscriptionAckEventsHandler($this->client, $this->credentials);
-        $this->handlers[PersistentSubscriptionNakEvents::class] = new PersistentSubscriptionNakEventsHandler($this->client, $this->credentials);
+        $this->handlers[ReadStreamEventsForward::class] = new ReadStreamEventsForwardHandler($this->configuration, $this->credentials);
+        $this->handlers[WriteEvents::class] = new WriteEventsHandler($this->configuration, $this->credentials);
+        $this->handlers[CreatePersistentSubscription::class] = new CreatePersistentSubscriptionHandler($this->configuration, $this->credentials);
+        $this->handlers[UpdatePersistentSubscription::class] = new UpdatePersistentSubscriptionHandler($this->configuration, $this->credentials);
+        $this->handlers[DeletePersistentSubscription::class] = new DeletePersistentSubscriptionHandler($this->configuration, $this->credentials);
+        $this->handlers[ConnectToPersistentSubscription::class] = new ConnectToPersistentSubscriptionHandler($this->configuration, $this->credentials);
+        $this->handlers[PersistentSubscriptionAckEvents::class] = new PersistentSubscriptionAckEventsHandler($this->configuration, $this->credentials);
+        $this->handlers[PersistentSubscriptionNakEvents::class] = new PersistentSubscriptionNakEventsHandler($this->configuration, $this->credentials);
     }
 
     /**
@@ -69,10 +69,7 @@ final class HttpTransport implements IHandleMessage
     static function factory($baseUrl, $username, $password)
     {
         return new HttpTransport(
-            new GuzzleClient([
-                'base_uri' => rtrim($baseUrl, '/'),
-                'timeout' => 2.0
-            ]),
+            new HttpConfiguration($baseUrl),
             new UserCredentials($username, $password)
         );
     }

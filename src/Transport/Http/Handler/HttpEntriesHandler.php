@@ -5,7 +5,6 @@ namespace Spray\Ouro\Transport\Http\Handler;
 use Assert\Assertion;
 use Assert\AssertionFailedException;
 use DateTimeImmutable;
-use Illuminate\Support\Facades\Log;
 use Spray\Ouro\Transport\Message\EventRecord;
 use Spray\Ouro\Transport\Message\ResolvedIndexedEvent;
 
@@ -20,7 +19,6 @@ abstract class HttpEntriesHandler extends HttpHandler
                 $this->assertEvent($entry);
                 $result[] = $this->buildEvent($entry);
             } catch (AssertionFailedException $e) {
-                Log::info($e->getMessage());
                 continue;
             }
         }

@@ -5,6 +5,7 @@ namespace Spray\Ouro\Transport\Http\Handler;
 use Assert\Assertion;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
+use Spray\Ouro\Transport\Http\HttpRequest;
 use Spray\Ouro\Transport\Message\DeletePersistentSubscription;
 use Spray\Ouro\Transport\Message\DeletePersistentSubscriptionCompleted;
 use Spray\Ouro\Transport\Message\DeletePersistentSubscriptionResult;
@@ -33,17 +34,12 @@ final class DeletePersistentSubscriptionHandler extends HttpHandler
      */
     function request($command)
     {
-        $response = yield $this->send(new Request(
-            'DELETE',
-            sprintf(
+        $response = yield from $this->send(HttpRequest::delete(sprintf(
                 '/subscriptions/%s/%s',
                 $command->getEventStreamId(),
                 $command->getSubscriptionGroupName()
-            ),
-            [
-                'Content-Type' => 'application/json'
-            ]
-        ));
+            ))
+            ->withContentType('application/json'));
 
         yield new DeletePersistentSubscriptionCompleted(DeletePersistentSubscriptionResult::success(), '');
     }

@@ -4,6 +4,7 @@ namespace Spray\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
 use GuzzleHttp\Psr7\Request;
+use Spray\Ouro\Transport\Http\HttpRequest;
 use Spray\Ouro\Transport\Message\NewEvent;
 use Spray\Ouro\Transport\Message\OperationResult;
 use Spray\Ouro\Transport\Message\WriteEvents;
@@ -32,16 +33,10 @@ final class WriteEventsHandler extends HttpHandler
      */
     function request($command)
     {
-        $response = yield from $this->send(new Request(
-            'POST',
-            '/streams/' . $command->getEventStreamId(),
-            [
-                'Content-Type' => 'application/vnd.eventstore.events+json'
-            ],
-            $this->buildBody($command->getNewEvents())
-        ));
-
-        $this->assertResponse($response);
+        $response = yield from $this->send(
+            HttpRequest::post('/streams/' . $command->getEventStreamId())
+                ->withContentType('application/vnd.eventstore.events+json')
+                ->withJsonBody($this->buildBody($command->getNewEvents())));
 
         return new WriteEventsCompleted(new OperationResult(OperationResult::SUCCESS), '');
     }

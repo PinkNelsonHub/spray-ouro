@@ -4,7 +4,7 @@ namespace Spray\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
 use Generator;
-use GuzzleHttp\Psr7\Request;
+use Spray\Ouro\Transport\Http\HttpRequest;
 use Spray\Ouro\Transport\Message\PersistentSubscriptionNakEvents;
 
 final class PersistentSubscriptionNakEventsHandler extends HttpEntriesHandler
@@ -31,16 +31,14 @@ final class PersistentSubscriptionNakEventsHandler extends HttpEntriesHandler
     function request($command)
     {
         foreach ($command->getProcessedEventIds() as $processedEventId) {
-            $response = yield from $this->send(new Request(
-                'POST',
-                sprintf(
-                    '/subscriptions/%s/%s/nack/%s?action=%s',
+            $response = yield from $this->send(HttpRequest::post(sprintf(
+                    '/subscriptions/%s/%s/nack/%s',
                     $command->getEventStreamId(),
                     $command->getSubscriptionId(),
-                    $processedEventId,
-                    $command->getAction()
-                )
-            ));
+                    $processedEventId
+                ))
+                ->withQuery('action', $command->getAction())
+            );
         }
     }
 }

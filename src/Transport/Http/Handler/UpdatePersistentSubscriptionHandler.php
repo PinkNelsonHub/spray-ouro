@@ -3,7 +3,7 @@
 namespace Spray\Ouro\Transport\Http\Handler;
 
 use Assert\Assertion;
-use GuzzleHttp\Psr7\Request;
+use Spray\Ouro\Transport\Http\HttpRequest;
 use Spray\Ouro\Transport\Message\UpdatePersistentSubscription;
 use Spray\Ouro\Transport\Message\UpdatePersistentSubscriptionCompleted;
 use Spray\Ouro\Transport\Message\UpdatePersistentSubscriptionResult;
@@ -32,17 +32,13 @@ final class UpdatePersistentSubscriptionHandler extends HttpHandler
      */
     function request($command)
     {
-        $response = yield $this->send(new Request(
-            'POST',
-            sprintf(
+        $response = yield $this->send(HttpRequest::post(sprintf(
                 '/subscriptions/%s/%s',
                 $command->getEventStreamId(),
                 $command->getSubscriptionGroupName()
-            ),
-            [
-                'Content-Type' => 'application/json'
-            ],
-            json_encode([
+            ))
+            ->withContentType('application/json')
+            ->withJsonBody([
                 'resolveLinktos' => $command->isResolveLinkTos(),
                 'startFrom' => $command->getStartFrom(),
                 'extraStatistics' => $command->isRecordStatistics(),
@@ -56,8 +52,7 @@ final class UpdatePersistentSubscriptionHandler extends HttpHandler
                 'messageTimeoutMilliseconds' => $command->getMessageTimeoutMilliseconds(),
                 'minCheckPointCount' => $command->getCheckPointMinCount(),
                 'namedConsumerStrategy' => $command->getNamedConsumerStrategy()
-            ])
-        ));
+            ]));
 
         return new UpdatePersistentSubscriptionCompleted(UpdatePersistentSubscriptionResult::success(), '');
     }
